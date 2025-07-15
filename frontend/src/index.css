@@ -1,0 +1,7 @@
+html, body, #root {
+    height: 100%;
+    overflow: visible;
+    position: relative;
+    z-index: 0;
+  }
+  
