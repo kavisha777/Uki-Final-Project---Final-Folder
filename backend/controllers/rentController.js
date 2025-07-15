@@ -391,17 +391,22 @@ export const completeRent = async (req, res) => {
 export const getUnavailableDates = async (req, res) => {
   const { itemId } = req.params;
 
-  const rents = await Rent.find({
-    item: itemId,
-    status: { $in: ['approved', 'confirmed'] }
-  });
+  try {
+    const rents = await Rent.find({
+      item: itemId,
+      status: { $in: ['approved', 'confirmed'] }
+    });
 
-  const unavailableDates = rents.map(r => ({
-    start: r.startDate,
-    end: r.endDate
-  }));
+    const unavailableDates = rents.map(r => ({
+      start: r.startDate.toISOString().split('T')[0], // '2025-07-16'
+      end: r.endDate.toISOString().split('T')[0]
+    }));
 
-  res.json({ unavailableDates });
+    res.json({ unavailableDates });
+  } catch (err) {
+    console.error("Unavailable Dates Error:", err);
+    res.status(500).json({ message: "Failed to fetch unavailable dates" });
+  }
 };
 
 

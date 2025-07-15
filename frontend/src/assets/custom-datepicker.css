@@ -1,0 +1,18 @@
+/* Start date */
+.react-datepicker__day--range-start,
+.react-datepicker__day--range-end {
+  background-color: #D30C7B !important; /* Your custom color */
+  color: white !important;
+  border-radius: 0.3rem;
+}
+
+/* In-range dates */
+.react-datepicker__day--in-range {
+  background-color: #FDE7F0 !important;  /* Light pink range */
+  color: #D30C7B !important;
+}
+
+/* Hover on selectable date */
+.react-datepicker__day:hover {
+  background-color: #f3c0d8 !important;
+}
