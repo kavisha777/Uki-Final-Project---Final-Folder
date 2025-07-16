@@ -5,6 +5,8 @@ import SignupPopup from '../components/SignupPopup';
 import ItemCard from '../components/ItemCard';
 import ItemModal from '../components/ItemModal';
 import BecomeSellerModal from '../components/BecomesellerPopup';
+import PackagesModal from '../components/PackagesModal';
+
 import {
   Store, Send, Truck,
   UserPlus, Upload, Wallet,
@@ -22,6 +24,10 @@ const Home = () => {
   const [featuredItems, setFeaturedItems] = useState([]);
   const [role, setRole] = useState(null);
   const navigate = useNavigate();
+  const [packages, setPackages] = useState([]);
+  const [showPackagesModal, setShowPackagesModal] = useState(false);
+
+
 
   // Check current role from localStorage
   useEffect(() => {
@@ -66,6 +72,13 @@ const Home = () => {
       .catch(err => console.error("Error fetching featured items:", err));
   }, []);
 
+
+  useEffect(() => {
+    axios.get('/packages') // replace with your actual endpoint
+      .then(res => setPackages(res.data))
+      .catch(err => console.error("Error fetching packages:", err));
+  }, []);
+  
   useEffect(() => {
     const shouldScroll = localStorage.getItem('scrollToAbout');
     if (shouldScroll === 'true') {
@@ -192,11 +205,12 @@ const Home = () => {
           ))}
         </div>
         <button
-          onClick={() => navigate('/packages')}
-          className="text-[#D30C7B] underline font-medium"
-        >
-          View Seller Packages →
-        </button>
+  onClick={() => setShowPackagesModal(true)}
+  className="text-[#D30C7B] underline font-medium"
+>
+  View Seller Packages →
+</button>
+
       </section>
 
       {/* Final CTA */}
@@ -241,6 +255,16 @@ const Home = () => {
       {showBecomeSeller && (
         <BecomeSellerModal onClose={() => setShowBecomeSeller(false)} />
       )}
+
+{showPackagesModal && (
+  <PackagesModal
+    packages={packages} // your packages array here
+    onClose={() => setShowPackagesModal(false)}
+    openLogin={setShowLogin}
+    openBecomeSeller={setShowBecomeSeller}
+  />
+)}
+
     </div>
   );
 };
