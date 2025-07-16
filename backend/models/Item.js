@@ -5,7 +5,7 @@ const itemSchema = new mongoose.Schema({
   description: { type: String, default: "" },
   images: [{ type: String, required: true }], // you can add array later if you support multiple
   pricePerDay: { type: Number, required: true },
-  advanceAmount: { type: Number, required: true }, 
+   
   depositeAmount: { type: Number, required: true },
   category: {
     type: String,

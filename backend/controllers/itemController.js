@@ -55,7 +55,7 @@ export const getItemById = async (req, res) => {
 
 export const createItem = async (req, res) => {
   try {
-    const { name, description, pricePerDay, advanceAmount, depositeAmount, category, available } = req.body;
+    const { name, description, pricePerDay, depositeAmount, category, available } = req.body;
 
     // 🧪 DEBUG LOGGING
     console.log('📥 Incoming item form data:', req.body);
@@ -77,7 +77,7 @@ req.files.forEach(file => console.log(file.path));
       description,
       images: imageUrls,
       pricePerDay,
-      advanceAmount,
+    
       depositeAmount,
       category,
       available,

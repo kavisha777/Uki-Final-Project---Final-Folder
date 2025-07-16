@@ -87,8 +87,6 @@ if (!rent.seller) {
     return res.status(400).json({ message: "Missing seller and item.owner" });
   }
 }
-
-    if (!rent) return res.status(404).json({ message: "Rent request not found" });
     console.log('Fetched rent:', rent);
 
     if (!rent.item) {
