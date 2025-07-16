@@ -84,10 +84,10 @@ const Navbar = ({ onLogin, onSignup }) => {
                 Sign in
               </button>
               <button onClick={onSignup} className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition">
-                Sign up as a Customer
+                Sign up 
               </button>
               <button onClick={onLogin} className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition">
-                Signup as a Seller
+                Become a Seller
               </button>
             </>
           ) : (
@@ -98,7 +98,7 @@ const Navbar = ({ onLogin, onSignup }) => {
                   onClick={() => window.dispatchEvent(new Event('openBecomeSeller'))}
                   className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition"
                 >
-                  Signup as a Seller
+                  Become a Seller
                 </button>
               )}
 
