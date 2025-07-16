@@ -66,27 +66,27 @@ const Navbar = ({ onLogin, onSignup }) => {
         <div className="flex items-center gap-4">
         <button
   onClick={() => navigate('/')}
-  className="text-[#D30C7B] font-medium hover:text-white hover:bg-[#D30C7B] px-4 py-1 rounded transition"
+  className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition"
 >
   Home
 </button>
 
 <button
   onClick={handleAboutUsClick}
-  className="text-[#D30C7B] font-medium hover:text-white hover:bg-[#D30C7B] px-4 py-1 rounded transition"
+  className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition"
 >
   About Us
 </button>
 
           {!isLoggedIn ? (
             <>
-              <button onClick={onLogin} className="text-[#D30C7B] font-medium hover:text-white hover:bg-[#D30C7B] px-4 py-1 rounded transition">
+              <button onClick={onLogin} className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition">
                 Sign in
               </button>
-              <button onClick={onSignup} className="text-[#D30C7B] font-medium hover:text-white hover:bg-[#D30C7B] px-4 py-1 rounded transition">
+              <button onClick={onSignup} className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition">
                 Sign up as a Customer
               </button>
-              <button onClick={onLogin} className="text-[#D30C7B] font-medium hover:text-white hover:bg-[#D30C7B] px-4 py-1 rounded transition">
+              <button onClick={onLogin} className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition">
                 Signup as a Seller
               </button>
             </>
@@ -96,7 +96,7 @@ const Navbar = ({ onLogin, onSignup }) => {
               {role === 'user' && (
                 <button
                   onClick={() => window.dispatchEvent(new Event('openBecomeSeller'))}
-                  className="text-[#D30C7B] font-medium hover:text-white hover:bg-[#D30C7B] px-4 py-1 rounded transition"
+                  className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition"
                 >
                   Signup as a Seller
                 </button>
@@ -110,7 +110,7 @@ const Navbar = ({ onLogin, onSignup }) => {
               </button>
               <button
                 onClick={handleLogout}
-                className="text-[#FF6F61] border border-[#FF6F61] px-4 py-1 rounded-full hover:bg-[#FF6F61] hover:text-white transition flex items-center gap-2"
+                className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition"
               >
                 <FiLogOut size={18} />
                 Logout

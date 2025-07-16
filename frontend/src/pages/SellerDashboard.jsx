@@ -850,7 +850,7 @@ useEffect(() => {
       <input type="text" placeholder="Name" value={itemForm.name || ''} onChange={e => setItemForm({ ...itemForm, name: e.target.value })} className="w-full p-2 border rounded" />
       <textarea placeholder="Description" value={itemForm.description || ''} onChange={e => setItemForm({ ...itemForm, description: e.target.value })} className="w-full p-2 border rounded" />
       <input type="number" placeholder="Price/Day" value={itemForm.pricePerDay || ''} onChange={e => setItemForm({ ...itemForm, pricePerDay: e.target.value })} className="w-full p-2 border rounded" />
-      <input type="number" placeholder="Advance Amount" value={itemForm.advanceAmount || ''} onChange={e => setItemForm({ ...itemForm, advanceAmount: e.target.value })} className="w-full p-2 border rounded" />
+    
       <input type="number" placeholder="Deposit Amount" value={itemForm.depositeAmount || ''} onChange={e => setItemForm({ ...itemForm, depositeAmount: e.target.value })} className="w-full p-2 border rounded" />
       <select value={itemForm.category || ''} onChange={e => setItemForm({ ...itemForm, category: e.target.value })} className="w-full p-2 border rounded">
         <option value="">Select Category</option>
@@ -974,7 +974,7 @@ useEffect(() => {
     onClick={() => handleConfirmPickupBySeller(rent._id)}
     className="bg-indigo-600 text-white px-3 py-1 rounded mt-2 hover:bg-indigo-700"
   >
-    I Confirm I Gave the Item
+    Item Delivered
   </button>
 )}
  {rent.status === 'returned' && (
