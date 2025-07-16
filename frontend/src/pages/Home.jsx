@@ -66,6 +66,17 @@ const Home = () => {
       .catch(err => console.error("Error fetching featured items:", err));
   }, []);
 
+  useEffect(() => {
+    const shouldScroll = localStorage.getItem('scrollToAbout');
+    if (shouldScroll === 'true') {
+      localStorage.removeItem('scrollToAbout');
+      setTimeout(() => {
+        const section = document.getElementById('how-it-works');
+        if (section) section.scrollIntoView({ behavior: 'smooth' });
+      }, 300); // Delay to wait for DOM to load
+    }
+  }, []);
+  
   const howItWorks = {
     renter: [
       { title: "Browse Items", icon: Store },
@@ -126,7 +137,7 @@ const Home = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-16 text-center bg-white">
+      <section  id="how-it-works" className="py-16 text-center bg-white">
         <h2 className="text-3xl font-bold mb-6">How ROLO Works</h2>
         <div className="flex justify-center mb-8">
           {["renter", "seller"].map(tab => (

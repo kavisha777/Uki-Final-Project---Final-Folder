@@ -40,6 +40,20 @@ const Navbar = ({ onLogin, onSignup }) => {
     else navigate('/user-dashboard');
   };
 
+
+  const handleAboutUsClick = () => {
+    if (window.location.pathname !== '/') {
+      // Navigate home first, then scroll after load
+      localStorage.setItem('scrollToAbout', 'true');
+      navigate('/');
+    } else {
+      const section = document.getElementById('how-it-works');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+  
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white/80 backdrop-blur border-b border-[#FDE7F0] shadow">
       <div className="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
@@ -50,6 +64,20 @@ const Navbar = ({ onLogin, onSignup }) => {
 
         {/* Right Controls */}
         <div className="flex items-center gap-4">
+        <button
+  onClick={() => navigate('/')}
+  className="text-[#D30C7B] font-medium hover:text-white hover:bg-[#D30C7B] px-4 py-1 rounded transition"
+>
+  Home
+</button>
+
+<button
+  onClick={handleAboutUsClick}
+  className="text-[#D30C7B] font-medium hover:text-white hover:bg-[#D30C7B] px-4 py-1 rounded transition"
+>
+  About Us
+</button>
+
           {!isLoggedIn ? (
             <>
               <button onClick={onLogin} className="text-[#D30C7B] font-medium hover:text-white hover:bg-[#D30C7B] px-4 py-1 rounded transition">
