@@ -179,7 +179,13 @@ const Home = () => {
         <h2 className="text-2xl font-bold text-center mb-6">Featured Items</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {featuredItems.map(item => (
-            <ItemCard key={item._id} item={item} onClick={() => setSelectedItem(item)} />
+           <ItemCard
+           key={item._id}
+           item={item}
+           onRentClick={() => setSelectedItem(item)}
+           openLoginPopup={() => setShowLogin(true)}
+         />
+         
           ))}
         </div>
         <div className="text-center mt-6">
