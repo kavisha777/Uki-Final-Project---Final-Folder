@@ -133,7 +133,11 @@ const fetchRentals = async () => {
     }
   };
   
-  
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('role');
+    window.location.href = '/'; // or use `navigate('/')` from react-router-dom
+  };
 // Existing useEffect watching activeTab
 useEffect(() => {
   if (activeTab === 'profile') fetchProfile();
@@ -189,7 +193,10 @@ useEffect(() => {
           </button>
         ))}
 
-        <button className="mt-auto flex items-center gap-3 px-4 py-2 text-[#E53935] hover:bg-[#E53935]/10 rounded">
+        <button
+          onClick={handleLogout}
+          className="mt-auto flex items-center gap-3 px-4 py-2 text-[#E53935] hover:bg-[#E53935]/10 rounded"
+        >
           <LogOut size={18} />
           Logout
         </button>
