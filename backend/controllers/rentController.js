@@ -515,38 +515,42 @@ export const updateRentStatus = async (req, res) => {
 
 
 
-
 export const getSellerPaymentsAndEarnings = async (req, res) => {
   try {
     const sellerId = req.user._id;
 
-    // 1. Get all items owned by the seller
+    // 1. Get seller's items
     const items = await Item.find({ owner: sellerId }).select('_id name pricePerDay');
 
     const itemIds = items.map(item => item._id);
 
-    // 2. Get all rents related to seller's items where payment is completed
+    // 2. Get rents for seller's items
     const rents = await Rent.find({ item: { $in: itemIds }, seller: sellerId })
       .populate('item', 'name pricePerDay')
       .populate('renter', 'name email contactNumber address town profilePic');
-      
 
-
-    // 3. For each rent, get the payment with status completed
+    // 3. Get related payments
     const payments = await Payment.find({
       rent: { $in: rents.map(r => r._id) },
       status: 'completed'
     });
 
-    // 4. Map payments to rents
     const rentPaymentsMap = new Map();
     payments.forEach(payment => {
       rentPaymentsMap.set(payment.rent.toString(), payment);
     });
 
-    // 5. Prepare response array with payment info per rent
+    // 4. Prepare enriched data
     const paymentsWithRentInfo = rents.map(rent => {
       const payment = rentPaymentsMap.get(rent._id.toString());
+
+      // Calculate number of days
+      const start = new Date(rent.startDate);
+      const end = new Date(rent.endDate);
+      const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+      const calculatedAmount = rent.item.pricePerDay * days;
+
       return {
         rentId: rent._id,
         item: rent.item,
@@ -557,10 +561,11 @@ export const getSellerPaymentsAndEarnings = async (req, res) => {
         paymentStatus: payment ? payment.status : 'pending',
         amountPaid: payment ? payment.amount : 0,
         paymentDate: payment ? payment.createdAt : null,
+        calculatedAmount,
+        daysRented: days,
       };
     });
 
-    // 6. Calculate total earnings (sum of all completed payment amounts)
     const totalEarnings = payments.reduce((sum, payment) => sum + payment.amount, 0);
 
     res.status(200).json({
@@ -568,6 +573,7 @@ export const getSellerPaymentsAndEarnings = async (req, res) => {
       payments: paymentsWithRentInfo,
       totalEarnings
     });
+
   } catch (error) {
     console.error('Error fetching seller payments:', error);
     res.status(500).json({ message: 'Failed to fetch seller payments and earnings', error: error.message });

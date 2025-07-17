@@ -286,6 +286,11 @@ useEffect(() => {
 
     }
   };
+  const handleLogout = () => {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('role');
+    window.location.href = '/'; // or use `navigate('/')` from react-router-dom
+  };
   
   
 // Existing useEffect watching activeTab
@@ -376,10 +381,14 @@ useEffect(() => {
           </button>
         ))}
 
-        <button className="mt-auto flex items-center gap-3 px-4 py-2 text-[#E53935] hover:bg-[#E53935]/10 rounded">
-          <LogOut size={18} />
-          Logout
-        </button>
+<button
+  onClick={handleLogout}
+  className="mt-auto flex items-center gap-3 px-4 py-2 text-[#E53935] hover:bg-[#E53935]/10 rounded"
+>
+  <LogOut size={18} />
+  Logout
+</button>
+
       </aside>
 
       {/* Main Content */}
@@ -760,7 +769,7 @@ useEffect(() => {
           <h2 className="text-lg">Total Earnings</h2>
           <p className="text-2xl font-bold">Rs. {totalEarnings}</p>
         </div>
-        <DollarSign size={36} />
+        <span className="text-3xl font-bold">Rs</span>
       </div>
     </div>
     <div className="bg-white shadow-md rounded-xl p-4">
