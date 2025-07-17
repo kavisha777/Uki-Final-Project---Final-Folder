@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../utils/axios';
 import toast from 'react-hot-toast';
+import Navbar from '../components/Navbar';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('users');
@@ -151,6 +152,7 @@ const AdminDashboard = () => {
     };
   
     return (
+    
       <span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[status] || 'bg-gray-200 text-gray-700'}`}>
         {status}
       </span>
@@ -172,8 +174,11 @@ const AdminDashboard = () => {
   );
 
   return (
-    <div className="flex min-h-screen bg-[#FFF7FA]">
-      <aside className="w-64 bg-[#FDE7F0] p-6 text-[#2E2E2E]">
+    <>
+    <Navbar/>
+    <div className="flex min-h-screen bg-[#FFF7FA] pt-20">
+
+      <aside className="fixed top-20 h-screen w-64 bg-[#FDE7F0] p-6 text-[#2E2E2E">
         <h2 className="text-xl font-bold mb-6 text-[#D30C7B]">Admin Panel</h2>
         <ul className="space-y-4">
           <li><button onClick={() => setActiveTab('users')} className={`block w-full text-left ${activeTab === 'users' ? 'font-bold' : ''}`}>User Management</button></li>
@@ -183,7 +188,7 @@ const AdminDashboard = () => {
         </ul>
       </aside>
 
-      <main className="flex-1 p-6">
+      <main className="flex-1 p-6 ml-64">
         {loading && <p className="text-center text-gray-500">Loading...</p>}
 
         {activeTab === 'users' && (
@@ -506,7 +511,8 @@ const AdminDashboard = () => {
 )}
  </main>
     </div>
-  );
+    </>
+    );
 };
 
 export default AdminDashboard;
