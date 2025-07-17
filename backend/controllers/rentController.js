@@ -197,38 +197,6 @@ export const getMyApprovedRents = async (req, res) => {
 
 
 
-// export const getMyItemsRentHistory = async (req, res) => {
-//   try {
-//     const sellerId = req.user._id;
-
-//     // Get all item IDs owned by seller
-//     const items = await Item.find({ owner: sellerId }).select('_id');
-//     const itemIds = items.map(item => item._id);
-
-//     // Get all rent records for seller's items
-//     const rents = await Rent.find({ item: { $in: itemIds } })
-//       .populate('item')
-//       .populate('renter', 'name email');
-
-//     // Attach payment status for each rent
-//     const rentHistory = await Promise.all(rents.map(async (rent) => {
-//       const payment = await Payment.findOne({ rent: rent._id, status: 'completed' });
-//       return {
-//         _id: rent._id,
-//         item: rent.item,
-//         renter: rent.renter,
-//         startDate: rent.startDate,
-//         endDate: rent.endDate,
-//         status: rent.status,
-//         paid: !!payment // true if paid
-//       };
-//     }));
-
-//     res.status(200).json({ rentHistory });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
 
 export const getMyItemsRentHistory = async (req, res) => {
   try {
@@ -412,39 +380,7 @@ export const getUnavailableDates = async (req, res) => {
 
 
 
-// export const getMyRentedItems = async (req, res) => {
-//   try {
-//     const rents = await Rent.find({ renter: req.user._id })
-//     .populate({
-//       path: 'item',
-//       select: 'name owner',
-//       populate: {
-//         path: 'owner',
-//         select: 'name'
-//       }
-//     });
-  
-//       const formatted = rents.map(r => {
-//         const itemName = r.item ? r.item.name : 'Unknown';
-//         const sellerName = r.item?.owner ? r.item.owner.name : 'Unknown Seller';
-      
-//         return {
-//           _id: r._id,
-//           itemName,
-//           sellerName,
-//           startDate: r.startDate,
-//           endDate: r.endDate,
-//           status: r.status,
-//           price: r.price,
-//         };
-//       });
-      
-//     res.status(200).json(formatted);
-//   } catch (err) {
-//     console.error("Error in getMyRentedItems:", err);
-//     res.status(500).json({ message: "Failed to get rentals", error: err.message });
-//   }
-// };
+
 
 export const getMyRentedItems = async (req, res) => {
   try {
