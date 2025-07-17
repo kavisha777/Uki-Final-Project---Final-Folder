@@ -2,7 +2,7 @@ import express from 'express';
 import {
   requestRent,respondToRentRequest,getUnavailableDates,getRequests,getMyApprovedRents,getMyItemsRentHistory,
   getAllRentsForAdmin,confirmPickupUpdate,markReturned,completeRent, getMyRentedItems,cancelRentRequest
-,updateRentStatus,updateRentPaymentStatus} from '../controllers/rentController.js';
+,updateRentStatus,updateRentPaymentStatus,getSellerPaymentsAndEarnings} from '../controllers/rentController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 
@@ -25,6 +25,7 @@ router.get('/my-rentals', authMiddleware(['user','seller']), getMyRentedItems);
 router.get('/all', authMiddleware(['admin']), getAllRentsForAdmin);
 router.patch('/:rentId/cancel', authMiddleware(['user', 'seller']), cancelRentRequest);
 router.patch('/:rentId/status', authMiddleware, updateRentStatus);
+router.get('/earnings', authMiddleware(['seller']), getSellerPaymentsAndEarnings);
 
 
 

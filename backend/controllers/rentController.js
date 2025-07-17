@@ -506,3 +506,70 @@ export const updateRentStatus = async (req, res) => {
   await rent.save();
   res.json({ message: 'Rent status updated', rent });
 };
+
+
+
+
+
+
+
+
+
+
+export const getSellerPaymentsAndEarnings = async (req, res) => {
+  try {
+    const sellerId = req.user._id;
+
+    // 1. Get all items owned by the seller
+    const items = await Item.find({ owner: sellerId }).select('_id name pricePerDay');
+
+    const itemIds = items.map(item => item._id);
+
+    // 2. Get all rents related to seller's items where payment is completed
+    const rents = await Rent.find({ item: { $in: itemIds }, seller: sellerId })
+      .populate('item', 'name pricePerDay')
+      .populate('renter', 'name email contactNumber address town profilePic');
+      
+
+
+    // 3. For each rent, get the payment with status completed
+    const payments = await Payment.find({
+      rent: { $in: rents.map(r => r._id) },
+      status: 'completed'
+    });
+
+    // 4. Map payments to rents
+    const rentPaymentsMap = new Map();
+    payments.forEach(payment => {
+      rentPaymentsMap.set(payment.rent.toString(), payment);
+    });
+
+    // 5. Prepare response array with payment info per rent
+    const paymentsWithRentInfo = rents.map(rent => {
+      const payment = rentPaymentsMap.get(rent._id.toString());
+      return {
+        rentId: rent._id,
+        item: rent.item,
+        renter: rent.renter,
+        startDate: rent.startDate,
+        endDate: rent.endDate,
+        rentStatus: rent.status,
+        paymentStatus: payment ? payment.status : 'pending',
+        amountPaid: payment ? payment.amount : 0,
+        paymentDate: payment ? payment.createdAt : null,
+      };
+    });
+
+    // 6. Calculate total earnings (sum of all completed payment amounts)
+    const totalEarnings = payments.reduce((sum, payment) => sum + payment.amount, 0);
+
+    res.status(200).json({
+      items,
+      payments: paymentsWithRentInfo,
+      totalEarnings
+    });
+  } catch (error) {
+    console.error('Error fetching seller payments:', error);
+    res.status(500).json({ message: 'Failed to fetch seller payments and earnings', error: error.message });
+  }
+};

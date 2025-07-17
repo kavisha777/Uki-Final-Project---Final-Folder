@@ -24,15 +24,6 @@ const UserDashboard = () => {
 const filteredRentals = rentals.filter(r => r.status === statusFilter);
 
 
-// const fetchRentals = async () => {
-//   try {
-//     const res = await axios.get('/rent/my-rentals');
-//     console.log("✅ RENTALS:", JSON.stringify(res.data, null, 2)); // 🧪 Check 'paid'
-//     setRentals(res.data);
-//   } catch (err) {
-//     console.error("❌ Error fetching rentals:", err.response?.data || err.message);
-//   }
-// };
 
 const fetchRentals = async () => {
   try {

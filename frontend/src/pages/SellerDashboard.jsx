@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from '../utils/axios';
-import { User, History, Hourglass, LogOut ,Boxes} from 'lucide-react';
+import { User, History, Hourglass, LogOut ,Boxes,DollarSign} from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Navbar from '../components/Navbar'; 
@@ -28,6 +28,8 @@ const [itemImages, setItemImages] = useState([]);
 const [editingItemId, setEditingItemId] = useState(null);
 
 
+const [payments, setPayments] = useState([]);
+const [totalEarnings, setTotalEarnings] = useState(0);
 
 
 const [rentHistory, setRentHistory] = useState([]);
@@ -117,6 +119,38 @@ useEffect(() => {
       setMessage('Failed to update profile.');
     }
   };
+
+
+
+  useEffect(() => {
+    const fetchSellerPayments = async () => {
+      try {
+        const token = localStorage.getItem('auth_token');
+  
+        const res = await axios.get('/rent/earnings', {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        console.log("Payments response:", res.data);
+  
+        // res.data is an object, payments array is inside it
+        setPayments(res.data.payments || []);
+  
+        // total earnings from the API (no need to reduce manually)
+        setTotalEarnings(res.data.totalEarnings || 0);
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to fetch payments');
+      }
+    };
+  
+    fetchSellerPayments();
+  }, []);
+  
+  
+
+
 
 
 
@@ -327,6 +361,7 @@ useEffect(() => {
 
           { key: 'rentals', label: 'My Rentals', icon: <History size={18} /> },
           { key: 'status', label: 'My Borrowed Rent Status', icon: <Hourglass size={18} /> },
+          { key: 'earnings', label: 'Earnings & Payments', icon: <DollarSign size={18} /> },  // <== new tab
 
         ].map(({ key, label, icon }) => (
           <button
@@ -713,9 +748,68 @@ useEffect(() => {
     ) : (
       <p className="text-gray-600">No {statusFilter} requests found.</p>
     )}
+    </div>
+)}
+
+{activeTab === 'earnings' && (
+  <div>
+    {/* Earnings Summary Card */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
+        <div>
+          <h2 className="text-lg">Total Earnings</h2>
+          <p className="text-2xl font-bold">Rs. {totalEarnings}</p>
+        </div>
+        <DollarSign size={36} />
+      </div>
+    </div>
+    <div className="bg-white shadow-md rounded-xl p-4">
+  <h2 className="text-xl font-semibold text-gray-700 mb-4">Payment History</h2>
+  {payments.length === 0 ? (
+    <p className="text-gray-500">No payments yet.</p>
+  ) : (
+    <div className="overflow-x-auto">
+      <table className="min-w-full table-auto text-sm text-left text-gray-700">
+        <thead className="sticky bg-gray-100 text-gray-600 uppercase text-xs top-0 z-10">
+          <tr>
+            <th className="px-4 py-3">No</th>
+            <th className="px-4 py-3">Renter</th>
+            <th className="px-4 py-3">Email</th>
+            <th className="px-4 py-3">Address</th>
+            <th className="px-4 py-3">Item</th>
+            <th className="px-4 py-3">Amount</th>
+            <th className="px-4 py-3">Date</th>
+            <th className="px-4 py-3">Time</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200">
+          {payments.map((payment, idx) => {
+            const paymentDateObj = payment.paymentDate ? new Date(payment.paymentDate) : null;
+
+            return (
+              <tr key={payment.rentId} className="hover:bg-gray-50">
+                <td className="px-4 py-3">{idx + 1}</td>
+                <td className="px-4 py-3">{payment.renter?.name || '-'}</td>
+                <td className="px-4 py-3">{payment.renter?.email || '-'}</td>
+                <td className="px-4 py-3">{payment.renter?.address || '-'}</td>
+                <td className="px-4 py-3">{payment.item?.name || '-'}</td>
+                <td className="px-4 py-3">Rs. {payment.amountPaid}</td>
+                <td className="px-4 py-3">{paymentDateObj ? paymentDateObj.toLocaleDateString() : '-'}</td>
+                <td className="px-4 py-3">{paymentDateObj ? paymentDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  )}
+</div>
+
   </div>
 )}
 
+        
+  
 
 
 
