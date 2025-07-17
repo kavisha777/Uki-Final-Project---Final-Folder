@@ -194,7 +194,8 @@ const AdminDashboard = () => {
         {activeTab === 'users' && (
           <div className="overflow-x-auto bg-white shadow rounded">
             <table className="min-w-full divide-y divide-gray-200">
-              {renderTableHeader(['Name', 'Email', 'Role', 'Phone', 'Address', 'Town', 'Actions'])}
+            {renderTableHeader(['Name', 'Email', 'Role', 'Phone', 'Address', 'Town', 'Verified', 'Last Login', 'Actions', 'ID Proof', 'Profile Pic'])}
+
               <tbody className="divide-y divide-gray-100">
                 {users.map((u) => (
                   <tr key={u._id} className="hover:bg-pink-50">
@@ -204,11 +205,26 @@ const AdminDashboard = () => {
                     {renderCell(u.contactNumber)}
                     {renderCell(u.address)}
                     {renderCell(u.town)}
+                    {renderCell(u.isVerified ? 'Yes' : 'No')}
+                    {renderCell(u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : '-')}
                     <td className="px-4 py-2 space-x-2">
                       <button onClick={() => setEditUser({ ...u })} className="bg-blue-500 text-white px-3 py-1 rounded text-xs">Edit</button>
                       {u.role === 'seller' && <button onClick={() => handleRevokeSeller(u._id)} className="bg-yellow-500 text-white px-3 py-1 rounded text-xs">Revoke</button>}
                       <button onClick={() => handleDeleteUser(u._id)} className="bg-red-500 text-white px-3 py-1 rounded text-xs">Delete</button>
                     </td>
+                    <td className="px-4 py-2">
+  {u.idProof ? (
+    <a href={u.idProof} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">
+      View ID
+    </a>
+  ) : '-'}
+</td>
+<td className="px-4 py-2">
+  {u.profilePic ? (
+    <img src={u.profilePic} alt="Profile" className="h-10 w-10 rounded-full object-cover" />
+  ) : '-'}
+</td>
+
                   </tr>
                 ))}
               </tbody>
@@ -281,7 +297,7 @@ const AdminDashboard = () => {
   </div>
 )}
 
-{activeTab === 'items' && (
+{/* {activeTab === 'items' && (
   <div>
     <div className="flex justify-between items-center mb-4">
       <h2 className="text-2xl font-bold">All Items</h2>
@@ -349,8 +365,65 @@ const AdminDashboard = () => {
       </tbody>
     </table>
   </div>
-)}
+)} */}
 
+{activeTab === 'items' && (
+  <div className="overflow-x-auto bg-white shadow rounded">
+    <div className="flex justify-between items-center p-4">
+      <h2 className="text-xl font-bold">All Items</h2>
+      <button
+        onClick={() =>
+          setEditItem({
+            name: '',
+            description: '',
+            pricePerDay: '',
+            advanceAmount: '',
+            depositeAmount: '',
+            category: '',
+            available: true,
+            owner: '', 
+            images: [],
+          })
+        }
+        className="bg-green-500 text-white px-4 py-2 rounded"
+      >
+        + Add Item
+      </button>
+    </div>
+
+    <table className="min-w-full divide-y divide-gray-200">
+      {renderTableHeader(['Name', 'Owner', 'Price/Day', 'Advance', 'Deposit', 'Category', 'Available', 'Created At', 'Actions'])}
+      <tbody className="divide-y divide-gray-100">
+        {items.map((item) => (
+          <tr key={item._id} className="hover:bg-pink-50">
+            {renderCell(item.name)}
+            {renderCell(item.owner?.name || '—')}
+            {renderCell(`₹${item.pricePerDay}`)}
+            {renderCell(`₹${item.advanceAmount}`)}
+            {renderCell(`₹${item.depositeAmount}`)}
+            {renderCell(item.category)}
+            {renderCell(item.available ? 'Yes' : 'No')}
+            {renderCell(new Date(item.createdAt).toLocaleDateString())}
+            <td className="px-4 py-2 space-x-2">
+              <button
+                onClick={() => setEditItem({ ...item })}
+                className="text-sm bg-blue-500 text-white px-2 py-1 rounded"
+              >
+                Edit
+              </button>
+              <button
+                onClick={() => handleDeleteItem(item._id)}
+                className="text-sm bg-red-500 text-white px-2 py-1 rounded"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
 
 {editItem && (
   <div className="mt-4 p-4 bg-white rounded shadow">
@@ -453,7 +526,7 @@ const AdminDashboard = () => {
   </div>
 )}
 
-
+{/* 
 {activeTab === 'rents' && (
   <div>
     <h2 className="text-2xl font-bold mb-4">All Rent Records</h2>
@@ -488,9 +561,36 @@ const AdminDashboard = () => {
 </tbody>
     </table>
   </div>
+)} */}
+
+{activeTab === 'rents' && (
+  <div className="overflow-x-auto bg-white shadow rounded">
+    <h2 className="text-xl font-bold p-4">All Rent Records</h2>
+    <table className="min-w-full divide-y divide-gray-200">
+      {renderTableHeader(['Item', 'Renter', 'Amount', 'Status', 'Start - End'])}
+      <tbody className="divide-y divide-gray-100">
+        {rents.map((r) => (
+          <tr key={r._id} className="hover:bg-pink-50">
+            <td className="px-4 py-2 text-sm text-gray-800">
+              <div className="font-semibold">{r.item?.name}</div>
+              <div className="text-xs text-gray-500">Owner: {r.item?.owner?.name || 'Unknown'}</div>
+            </td>
+            <td className="px-4 py-2 text-sm text-gray-800">
+              <div className="font-semibold">{r.renter?.name}</div>
+              <div className="text-xs text-gray-500">{r.renter?.email}</div>
+            </td>
+            {renderCell(r.paymentDetails?.amount ? `₹${r.paymentDetails.amount}` : '-')}
+            <td className="px-4 py-2 text-sm">{renderStatusBadge(r.status)}</td>
+            {renderCell(`${new Date(r.startDate).toLocaleDateString()} - ${new Date(r.endDate).toLocaleDateString()}`)}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 )}
 
-{activeTab === 'payments' && (
+
+{/* {activeTab === 'payments' && (
   <div>
     <h2 className="text-2xl font-bold mb-4">All Payments</h2>
     <table className="w-full bg-white shadow rounded">
@@ -508,7 +608,29 @@ const AdminDashboard = () => {
       </tbody>
     </table>
   </div>
+)} */}
+
+
+{activeTab === 'payments' && (
+  <div className="overflow-x-auto bg-white shadow rounded">
+    <h2 className="text-xl font-bold p-4">All Payments</h2>
+    <table className="min-w-full divide-y divide-gray-200">
+      {renderTableHeader(['User', 'Amount', 'Item', 'Status', 'Date'])}
+      <tbody className="divide-y divide-gray-100">
+        {payments.map((p) => (
+          <tr key={p._id} className="hover:bg-pink-50">
+            {renderCell(p.user?.name)}
+            {renderCell(`₹${p.amount}`)}
+            {renderCell(p.item?.name)}
+            {renderCell(p.status)}
+            {renderCell(new Date(p.createdAt).toLocaleString())}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 )}
+
  </main>
     </div>
     </>

@@ -759,10 +759,10 @@ useEffect(() => {
     )}
     </div>
 )}
-
+{/* 
 {activeTab === 'earnings' && (
   <div>
-    {/* Earnings Summary Card */}
+    
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
       <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
         <div>
@@ -815,10 +815,65 @@ useEffect(() => {
 </div>
 
   </div>
-)}
+)} */}
 
         
-  
+{activeTab === 'earnings' && (
+  <div>
+    {/* Earnings Summary Card */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
+        <div>
+          <h2 className="text-lg">Total Earnings</h2>
+          <p className="text-2xl font-bold">Rs. {totalEarnings}</p>
+        </div>
+        <span className="text-3xl font-bold">Rs</span>
+      </div>
+    </div>
+
+    <div className="overflow-x-auto bg-white shadow rounded">
+      <h2 className="text-xl font-semibold text-[#D30C7B] px-4 pt-4">Payment History</h2>
+
+      {payments.length === 0 ? (
+        <p className="text-gray-500 px-4 py-6">No payments yet.</p>
+      ) : (
+        <table className="min-w-full divide-y divide-gray-200 mt-2">
+          <thead className="bg-[#FDE7F0] text-left">
+            <tr>
+              <th className="px-4 py-2 text-sm font-semibold text-gray-700">No</th>
+              <th className="px-4 py-2 text-sm font-semibold text-gray-700">Renter</th>
+              <th className="px-4 py-2 text-sm font-semibold text-gray-700">Email</th>
+              <th className="px-4 py-2 text-sm font-semibold text-gray-700">Address</th>
+              <th className="px-4 py-2 text-sm font-semibold text-gray-700">Item</th>
+              <th className="px-4 py-2 text-sm font-semibold text-gray-700">Amount</th>
+              <th className="px-4 py-2 text-sm font-semibold text-gray-700">Date</th>
+              <th className="px-4 py-2 text-sm font-semibold text-gray-700">Time</th>
+            </tr>
+          </thead>
+
+          <tbody className="divide-y divide-gray-100">
+            {payments.map((payment, idx) => {
+              const paymentDateObj = payment.paymentDate ? new Date(payment.paymentDate) : null;
+              return (
+                <tr key={payment.rentId} className="hover:bg-pink-50">
+                  <td className="px-4 py-2 text-sm text-gray-800">{idx + 1}</td>
+                  <td className="px-4 py-2 text-sm text-gray-800">{payment.renter?.name || '-'}</td>
+                  <td className="px-4 py-2 text-sm text-gray-800">{payment.renter?.email || '-'}</td>
+                  <td className="px-4 py-2 text-sm text-gray-800">{payment.renter?.address || '-'}</td>
+                  <td className="px-4 py-2 text-sm text-gray-800">{payment.item?.name || '-'}</td>
+                  <td className="px-4 py-2 text-sm text-gray-800">Rs. {payment.amountPaid}</td>
+                  <td className="px-4 py-2 text-sm text-gray-800">{paymentDateObj ? paymentDateObj.toLocaleDateString() : '-'}</td>
+                  <td className="px-4 py-2 text-sm text-gray-800">{paymentDateObj ? paymentDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      )}
+    </div>
+  </div>
+)}
+
 
 
 
