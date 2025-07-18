@@ -83,9 +83,7 @@ const Navbar = ({ onLogin, onSignup }) => {
               <button onClick={onLogin} className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition">
                 Sign in
               </button>
-              <button onClick={onSignup} className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition">
-                Sign up 
-              </button>
+              
               <button onClick={onLogin} className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition">
                 Become a Seller
               </button>
