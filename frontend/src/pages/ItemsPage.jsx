@@ -108,6 +108,7 @@ import React, { useEffect, useState } from 'react';
 import axios from '../utils/axios';
 import ItemCard from '../components/ItemCard';
 import ItemModal from '../components/ItemModal';
+import Navbar from '../components/Navbar';
 
 const ItemsPage = () => {
   const [items, setItems] = useState([]);
@@ -146,7 +147,9 @@ const ItemsPage = () => {
   };
 
   return (
-    <div className="bg-[#FDFDFD] min-h-screen px-6 py-8">
+    <>
+    <Navbar />
+    <div className="bg-[#FDFDFD] min-h-screen px-6 py-8 mt-20">
       <h1 className="text-3xl font-bold text-center mb-6">Explore Items</h1>
 
       {/* Search + Filters */}
@@ -165,13 +168,15 @@ const ItemsPage = () => {
           onChange={(e) => setCategory(e.target.value)}
         >
           <option value="">All Categories</option>
-          <option value="electronics">Electronics</option>
+          
           <option value="photography">Photography</option>
           <option value="cameras">Cameras</option>
           <option value="accessories">Accessories</option>
-          <option value="books">Books</option>
+          <option value="books">Audio</option>
           <option value="furniture">Furniture</option>
           <option value="clothing">Clothing</option>
+          <option value="shoes">Shoes</option>
+          <option value="jewels">Jewels</option>
         </select>
 
         <input
@@ -219,6 +224,7 @@ const ItemsPage = () => {
         <ItemModal item={selectedItem} onClose={() => setSelectedItem(null)} />
       )}
     </div>
+    </>
   );
 };
 
