@@ -12,7 +12,18 @@ const SellerDashboard = () => {
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'profile';
   const [activeTab, setActiveTab] = useState(defaultTab);
+  const rentalViewFilter = [
+    { key: 'all', label: 'All' },
+    { key: 'pending', label: 'Pending' },
+    { key: 'approved', label: 'Approved' },
+    { key: 'confirmed', label: 'Confirmed' },
+    { key: 'in-use', label: 'In Use' },
+    { key: 'returned', label: 'Returned' },
+    { key: 'completed', label: 'Completed' },
+    { key: 'cancelled', label: 'Cancelled' },
+  ];
   
+
   const [rentals, setRentals] = useState([]);
   const [profile, setProfile] = useState({});
   const [form, setForm] = useState({});
@@ -358,28 +369,58 @@ useEffect(() => {
           <p className="mt-2 font-semibold text-lg">{profile.name || 'User'}</p>
         </div>
 
-        {[
-          { key: 'profile', label: 'My Profile', icon: <User size={18} /> },
-          { key: 'items', label: 'My Items', icon: <Boxes size={18} /> },
-          { key: 'requests', label: 'Incoming Requests', icon: <Hourglass size={18} /> },
-          { key: 'rent-status', label: 'My Item Rent Status', icon: <Hourglass size={18} /> },
+        <div className="space-y-2">
+  {/* Common */}
+  <button
+    onClick={() => setActiveTab('profile')}
+    className={`flex items-center gap-3 w-full text-left px-4 py-2 rounded transition ${
+      activeTab === 'profile' ? 'bg-[#D30C7B] text-white' : 'text-[#2E2E2E] hover:bg-[#D30C7B]/10'
+    }`}
+  >
+    <User size={18} />
+    My Profile
+  </button>
 
-          { key: 'rentals', label: 'My Rentals', icon: <History size={18} /> },
-          { key: 'status', label: 'My Borrowed Rent Status', icon: <Hourglass size={18} /> },
-          { key: 'earnings', label: 'Earnings & Payments', icon: <DollarSign size={18} /> },  // <== new tab
+  {/* Seller Section */}
+  <hr className="border-t border-gray-300 my-2" />
+  <p className="text-xs font-semibold text-gray-500 px-4">SELLER</p>
+  {[
+    { key: 'items', label: 'My Items', icon: <Boxes size={18} /> },
+    { key: 'requests', label: 'Incoming Requests', icon: <Hourglass size={18} /> },
+    { key: 'rent-status', label: 'My Item Rent Status', icon: <Hourglass size={18} /> },
+    { key: 'earnings', label: 'Earnings & Payments', icon: <DollarSign size={18} /> },
+  ].map(({ key, label, icon }) => (
+    <button
+      key={key}
+      onClick={() => setActiveTab(key)}
+      className={`flex items-center gap-3 w-full text-left px-4 py-2 rounded transition ${
+        activeTab === key ? 'bg-[#D30C7B] text-white' : 'text-[#2E2E2E] hover:bg-[#D30C7B]/10'
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
+  ))}
 
-        ].map(({ key, label, icon }) => (
-          <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            className={`flex items-center gap-3 w-full text-left px-4 py-2 rounded transition ${
-              activeTab === key ? 'bg-[#D30C7B] text-white' : 'text-[#2E2E2E] hover:bg-[#D30C7B]/10'
-            }`}
-          >
-            {icon}
-            {label}
-          </button>
-        ))}
+  {/* User Section */}
+  <hr className="border-t border-gray-300 my-2" />
+  <p className="text-xs font-semibold text-gray-500 px-4">USER</p>
+  {[
+    { key: 'rentals', label: 'My Rentals', icon: <History size={18} /> },
+    { key: 'status', label: 'My Borrowed Rent Status', icon: <Hourglass size={18} /> },
+  ].map(({ key, label, icon }) => (
+    <button
+      key={key}
+      onClick={() => setActiveTab(key)}
+      className={`flex items-center gap-3 w-full text-left px-4 py-2 rounded transition ${
+        activeTab === key ? 'bg-[#D30C7B] text-white' : 'text-[#2E2E2E] hover:bg-[#D30C7B]/10'
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
+  ))}
+</div>
 
 <button
   onClick={handleLogout}
@@ -627,196 +668,6 @@ useEffect(() => {
 
 
 
-
-
-
-
-
-
-        {/* Rentals Tab */}
-        {activeTab === 'rentals' && (
-          <div>
-            <h2 className="text-xl font-bold mb-4">My Rentals</h2>
-            {rentals.length === 0 ? (
-              <p className="text-gray-600">No rentals found.</p>
-            ) : (
-              rentals
-                .filter(r => ['in-use', 'completed', 'returned'].includes(r.status))
-
-                .map(r => (
-                  <div key={r._id} className="bg-white p-4 rounded shadow mb-4">
-                    {r.status === 'in-use' && (
-  <button
-    onClick={() => handleMarkReturned(r._id)}
-    className="bg-yellow-500 text-white px-4 py-1 rounded mt-2 hover:bg-yellow-600"
-  >
-    Return Item
-  </button>
-)}
-
-{r.status === 'returned' && (
-  <button
-    onClick={() => handleCompleteRent(r._id)}
-    className="bg-green-600 text-white px-4 py-1 rounded mt-2 hover:bg-green-700"
-  >
-    Complete Rent
-  </button>
-)}
-
-                    <p><strong>Item:</strong> {r.itemName}</p>
-                    <p><strong>From:</strong> {r.sellerName}</p>
-                    <p><strong>Dates:</strong> {r.startDate.slice(0,10)} to {r.endDate.slice(0,10)}</p>
-                    <p><strong>Status:</strong> <span className="text-blue-600 font-medium">{r.status}</span></p>
-                  </div>
-                ))
-            )}
-          </div>
-        )}
-{activeTab === 'status' && (
-  <div>
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-xl font-bold">Rent Request Status</h2>
-
-      {/* Dropdown Filter */}
-      <select
-        value={statusFilter}
-        onChange={(e) => setStatusFilter(e.target.value)}
-        className="border border-gray-300 rounded px-3 py-1 text-sm"
-      >
-        <option value="all">All</option>
-        <option value="pending">Pending</option>
-        <option value="approved">Approved</option>
-        <option value="confirmed">Confirmed</option>
-        <option value="cancelled">Cancelled</option>
-      </select>
-    </div>
-
-    {/* Filtered Cards */}
-    {(statusFilter === 'all' ? rentals : rentals.filter(r => r.status === statusFilter)).length > 0 ? (
-      (statusFilter === 'all' ? rentals : rentals.filter(r => r.status === statusFilter)).map((r) => (
-        <div
-          key={r._id}
-          className={`bg-white p-4 rounded-lg shadow mb-4 space-y-1 border-l-4 ${
-            r.status === 'approved' ? 'border-green-500' :
-            r.status === 'cancelled' ? 'border-red-500' :
-            r.status === 'pending' ? 'border-yellow-500' :
-            r.status === 'confirmed' ? 'border-blue-500' :
-            'border-gray-300'
-          }`}
-        >
-          <p><strong>Item:</strong> {r.itemName}</p>
-          <p><strong>Requested:</strong> {r.startDate.slice(0, 10)} to {r.endDate.slice(0, 10)}</p>
-
-          {/* Confirm Pickup (user side) */}
-          {r.status === 'confirmed' && !r.confirmPickupByUser && (
-            <button
-              onClick={() => handleConfirmPickup(r._id)}
-              className="bg-blue-600 text-white px-4 py-1 rounded mt-2 hover:bg-blue-700"
-            >
-              Confirm Pickup
-            </button>
-          )}
-
-          <p>
-            <strong>Request Status:</strong>{' '}
-            <span className={`font-semibold ${
-              r.status === 'approved'
-                ? 'text-green-600'
-                : r.status === 'cancelled'
-                ? 'text-red-600'
-                : r.status === 'pending'
-                ? 'text-yellow-600'
-                : r.status === 'confirmed'
-                ? 'text-blue-600'
-                : 'text-gray-600'
-            }`}>
-              {r.status}
-            </span>
-          </p>
-
-          <p>
-            <strong>Payment Status:</strong>{' '}
-            <span className={`font-semibold ${
-              r.paid ? 'text-green-700' : 'text-red-500'
-            }`}>
-              {r.paymentStatus === 'completed' ? 'Paid ✅' : 'Not Paid ❌'}
-            </span>
-          </p>
-
-          {/* Pay Now Button */}
-          {r.status === 'approved' && !r.paid && (
-            <button
-              onClick={() => handleStripePayment(r._id)}
-              className="bg-green-600 text-white px-4 py-1 rounded mt-2 hover:bg-green-700"
-            >
-              Pay Now
-            </button>
-          )}
-        </div>
-      ))
-    ) : (
-      <p className="text-gray-600">No {statusFilter} requests found.</p>
-    )}
-    </div>
-)}
-{/* 
-{activeTab === 'earnings' && (
-  <div>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-      <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-xl p-4 shadow-md flex items-center justify-between">
-        <div>
-          <h2 className="text-lg">Total Earnings</h2>
-          <p className="text-2xl font-bold">Rs. {totalEarnings}</p>
-        </div>
-        <span className="text-3xl font-bold">Rs</span>
-      </div>
-    </div>
-    <div className="bg-white shadow-md rounded-xl p-4">
-  <h2 className="text-xl font-semibold text-gray-700 mb-4">Payment History</h2>
-  {payments.length === 0 ? (
-    <p className="text-gray-500">No payments yet.</p>
-  ) : (
-    <div className="overflow-x-auto">
-      <table className="min-w-full table-auto text-sm text-left text-gray-700">
-        <thead className="sticky bg-gray-100 text-gray-600 uppercase text-xs top-0 z-10">
-          <tr>
-            <th className="px-4 py-3">No</th>
-            <th className="px-4 py-3">Renter</th>
-            <th className="px-4 py-3">Email</th>
-            <th className="px-4 py-3">Address</th>
-            <th className="px-4 py-3">Item</th>
-            <th className="px-4 py-3">Amount</th>
-            <th className="px-4 py-3">Date</th>
-            <th className="px-4 py-3">Time</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-          {payments.map((payment, idx) => {
-            const paymentDateObj = payment.paymentDate ? new Date(payment.paymentDate) : null;
-
-            return (
-              <tr key={payment.rentId} className="hover:bg-gray-50">
-                <td className="px-4 py-3">{idx + 1}</td>
-                <td className="px-4 py-3">{payment.renter?.name || '-'}</td>
-                <td className="px-4 py-3">{payment.renter?.email || '-'}</td>
-                <td className="px-4 py-3">{payment.renter?.address || '-'}</td>
-                <td className="px-4 py-3">{payment.item?.name || '-'}</td>
-                <td className="px-4 py-3">Rs. {payment.amountPaid}</td>
-                <td className="px-4 py-3">{paymentDateObj ? paymentDateObj.toLocaleDateString() : '-'}</td>
-                <td className="px-4 py-3">{paymentDateObj ? paymentDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '-'}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
-  )}
-</div>
-
-  </div>
-)} */}
-
         
 {activeTab === 'earnings' && (
   <div>
@@ -873,6 +724,207 @@ useEffect(() => {
     </div>
   </div>
 )}
+
+
+
+
+
+
+ {/* Rentals Tab */}
+ {activeTab === 'rentals' && (
+  <div>
+    <div className="flex justify-between items-center mb-4">
+      <h2 className="text-xl font-bold">My Rentals</h2>
+      <div className="flex flex-wrap gap-2">
+        {['all', 'completed', 'cancelled'].map((status) => (
+          <button
+            key={status}
+            onClick={() => setRentalViewFilter(status)}
+            className={`px-4 py-1 rounded-full text-sm font-medium transition ${
+              rentalViewFilter === status
+                ? 'bg-[#D30C7B] text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-[#D30C7B]/10'
+            }`}
+          >
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {rentals.filter(r =>
+      rentalViewFilter === 'all' ? ['completed', 'cancelled'].includes(r.status)
+        : r.status === rentalViewFilter
+    ).length === 0 ? (
+      <p className="text-gray-600">No rentals found.</p>
+    ) : (
+      rentals
+        .filter(r =>
+          rentalViewFilter === 'all' ? ['completed', 'cancelled'].includes(r.status)
+            : r.status === rentalViewFilter
+        )
+        .map(r => (
+          <div
+            key={r._id}
+            className={`p-4 rounded-lg shadow-md mb-4 border-l-4 ${
+              r.status === 'completed'
+                ? 'border-green-500 bg-green-50'
+                : 'border-red-500 bg-red-50'
+            }`}
+          >
+            <div className="flex items-center gap-4">
+              {r.itemImage ? (
+                <img
+                  src={r.itemImage}
+                  alt={r.itemName}
+                  className="w-20 h-20 rounded-lg object-cover border"
+                />
+              ) : (
+                <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-sm">
+                  No Image
+                </div>
+              )}
+
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold">{r.itemName}</h3>
+                <p className="text-sm text-gray-700"><strong>From:</strong> {r.sellerName}</p>
+                <p className="text-sm text-gray-700"><strong>Dates:</strong> {r.startDate.slice(0,10)} to {r.endDate.slice(0,10)}</p>
+              </div>
+
+              <div className="text-right">
+                <p className={`text-sm font-semibold ${
+                  r.status === 'completed' ? 'text-green-700' : 'text-red-600'
+                }`}>
+                  {r.status === 'completed' ? 'Completed ✅' : 'Cancelled ❌'}
+                </p>
+              </div>
+            </div>
+          </div>
+        ))
+    )}
+  </div>
+)}
+
+{activeTab === 'status' && (
+  <div>
+    <div className="flex justify-between items-center mb-4">
+      <h2 className="text-xl font-bold">Rent Request Status</h2>
+
+      {/* Dropdown Filter */}
+      <div className="flex flex-wrap gap-2">
+  {['all', 'pending', 'approved', 'confirmed','in-use'].map((status) => (
+    <button
+      key={status}
+      onClick={() => setStatusFilter(status)}
+      className={`px-4 py-1 rounded-full text-sm font-medium transition ${
+        statusFilter === status
+          ? 'bg-[#D30C7B] text-white'
+          : 'bg-gray-100 text-gray-700 hover:bg-[#D30C7B]/10'
+      }`}
+    >
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </button>
+  ))}
+</div>
+
+    </div>
+
+    {/* Filtered Cards */}
+    {(statusFilter === 'all' ? rentals : rentals.filter(r => r.status === statusFilter)).length > 0 ? (
+      (statusFilter === 'all' ? rentals : rentals.filter(r => r.status === statusFilter)).map((r) => (
+        <div
+          key={r._id}
+          className={`bg-white p-4 rounded-lg shadow mb-4 space-y-1 border-l-4 ${
+            r.status === 'approved' ? 'border-green-500' :
+            r.status === 'cancelled' ? 'border-red-500' :
+            r.status === 'pending' ? 'border-yellow-500' :
+            r.status === 'confirmed' ? 'border-blue-500' :
+            'border-gray-300'
+          }`}
+        >
+          
+          <div className="flex items-center gap-4">
+  {r.itemImage ? (
+    <img
+      src={r.itemImage}
+      alt={r.itemName}
+      className="w-20 h-20 rounded-lg object-cover border"
+    />
+  ) : (
+    <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-sm">
+      No Image
+    </div>
+  )}
+  <div>
+    <p><strong>Item:</strong> {r.itemName}</p>
+    <p><strong>Requested:</strong> {r.startDate.slice(0, 10)} to {r.endDate.slice(0, 10)}</p>
+  </div>
+</div>
+
+          {/* Confirm Pickup (user side) */}
+          {r.status === 'confirmed' && !r.confirmPickupByUser && (
+            <button
+              onClick={() => handleConfirmPickup(r._id)}
+              className="bg-blue-600 text-white px-4 py-1 rounded mt-2 hover:bg-blue-700"
+            >
+              Item Received
+            </button>
+          )}
+       
+       {r.status === 'in-use' && (
+  <button
+    onClick={() => handleMarkReturned(r._id)}
+    className="bg-yellow-500 text-white px-4 py-1 rounded mt-2 hover:bg-yellow-600"
+  >
+    Return Item
+  </button>
+)}
+          <p>
+            <strong>Request Status:</strong>{' '}
+            <span className={`font-semibold ${
+              r.status === 'approved'
+                ? 'text-green-600'
+                : r.status === 'cancelled'
+                ? 'text-red-600'
+                : r.status === 'pending'
+                ? 'text-yellow-600'
+                : r.status === 'confirmed'
+                ? 'text-blue-600'
+                : 'text-gray-600'
+            }`}>
+              {r.status}
+            </span>
+          </p>
+
+          <p>
+  <strong>Payment Status:</strong>{' '}
+  <span className={`font-semibold ${
+    r.paymentStatus === 'completed' ? 'text-green-700' : 'text-red-500'
+  }`}>
+    {r.paymentStatus === 'completed' ? 'Paid ✅' : 'Not Paid ❌'}
+  </span>
+</p>
+
+
+          {/* Pay Now Button */}
+          {r.status === 'approved' && !r.paid && (
+            <button
+              onClick={() => handleStripePayment(r._id)}
+              className="bg-green-600 text-white px-4 py-1 rounded mt-2 hover:bg-green-700"
+            >
+              Pay Now
+            </button>
+          )}
+        </div>
+      ))
+    ) : (
+      <p className="text-gray-600">No {statusFilter} requests found.</p>
+    )}
+  </div>
+)}
+
+
+
 
 
 
