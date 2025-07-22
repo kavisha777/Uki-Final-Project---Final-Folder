@@ -31,6 +31,26 @@ const SignupPopup = ({ onClose, onSwitchToLogin }) => {
     }
   };
 
+  // Password validation function
+ 
+  // Updated password validation: more than 8 chars, must include a letter and a number
+  const validatePassword = (pwd) => {
+    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{9,}$/.test(pwd);
+  };
+  const [passwordError, setPasswordError] = useState('');
+
+  const handlePasswordChange = (e) => {
+    const value = e.target.value;
+    setPassword(value);
+    if (!validatePassword(value)) {
+      setPasswordError(
+        'Password must be at least 8 characters, include uppercase, lowercase, number, and special character.'
+      );
+    } else {
+      setPasswordError('');
+    }
+  };
+
   return (
     <>
       {/* Toast Notification */}
@@ -47,7 +67,19 @@ const SignupPopup = ({ onClose, onSwitchToLogin }) => {
         <div className="min-h-screen flex flex-col items-center justify-center py-16 px-4">
           <div className="w-full max-w-md p-6 rounded-2xl bg-[#FDFDFD] shadow-lg relative">
             <h2 className="text-2xl font-bold text-center text-[#2E2E2E]">Create Account</h2>
-            <form onSubmit={handleSignup}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!validatePassword(password)) {
+                  setPasswordError(
+                    'Password must be at least 8 characters, include uppercase, lowercase, number, and special character.'
+                  );
+                  return;
+                }
+                setPasswordError('');
+                handleSignup(e);
+              }}
+            >
               <div className="mt-4">
                 <label className="block font-semibold text-[#2E2E2E]">Name</label>
                 <input
@@ -72,16 +104,20 @@ const SignupPopup = ({ onClose, onSwitchToLogin }) => {
                 <label className="block font-semibold text-[#2E2E2E]">Password</label>
                 <input
                   type="password"
-                  className="w-full p-3 rounded-lg border border-[#CBA3D8] focus:outline-none focus:border-[#D30C7B]"
+                  className={`w-full p-3 rounded-lg border ${passwordError ? 'border-red-500' : 'border-[#CBA3D8]'} focus:outline-none focus:border-[#D30C7B]`}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={handlePasswordChange}
                   required
                 />
+                {passwordError && (
+                  <p className="text-red-500 text-xs mt-1">{passwordError}</p>
+                )}
               </div>
 
               <button
                 type="submit"
                 className="mt-4 w-full bg-[#D30C7B] text-white py-3 rounded-lg hover:bg-pink-700"
+                disabled={!!passwordError}
               >
                 Sign Up
               </button>

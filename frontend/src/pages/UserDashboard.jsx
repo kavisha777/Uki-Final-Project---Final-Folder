@@ -10,7 +10,8 @@ const UserDashboard = () => {
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'profile';
   const [activeTab, setActiveTab] = useState(defaultTab);
-  
+  const [rentalViewFilter, setRentalViewFilter] = useState('all');
+
   const [rentals, setRentals] = useState([]);
   const [profile, setProfile] = useState({});
   const [form, setForm] = useState({});
@@ -273,60 +274,101 @@ useEffect(() => {
 
         {/* Rentals Tab */}
         {activeTab === 'rentals' && (
-          <div>
-            <h2 className="text-xl font-bold mb-4">My Rentals</h2>
-            {rentals.length === 0 ? (
-              <p className="text-gray-600">No rentals found.</p>
-            ) : (
-              rentals
-                .filter(r => ['in-use', 'completed', 'returned'].includes(r.status))
+  <div>
+    <div className="flex justify-between items-center mb-4">
+      <h2 className="text-xl font-bold">My Rentals</h2>
+      <div className="flex flex-wrap gap-2">
+        {['all', 'completed', 'cancelled'].map((status) => (
+          <button
+            key={status}
+            onClick={() => setRentalViewFilter(status)}
+            className={`px-4 py-1 rounded-full text-sm font-medium transition ${
+              rentalViewFilter === status
+                ? 'bg-[#D30C7B] text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-[#D30C7B]/10'
+            }`}
+          >
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </button>
+        ))}
+      </div>
+    </div>
 
-                .map(r => (
-                  <div key={r._id} className="bg-white p-4 rounded shadow mb-4">
-                    {r.status === 'in-use' && (
-  <button
-    onClick={() => handleMarkReturned(r._id)}
-    className="bg-yellow-500 text-white px-4 py-1 rounded mt-2 hover:bg-yellow-600"
-  >
-    Return Item
-  </button>
-)}
+    {rentals.filter(r =>
+      rentalViewFilter === 'all' ? ['completed', 'cancelled'].includes(r.status)
+        : r.status === rentalViewFilter
+    ).length === 0 ? (
+      <p className="text-gray-600">No rentals found.</p>
+    ) : (
+      rentals
+        .filter(r =>
+          rentalViewFilter === 'all' ? ['completed', 'cancelled'].includes(r.status)
+            : r.status === rentalViewFilter
+        )
+        .map(r => (
+          <div
+            key={r._id}
+            className={`p-4 rounded-lg shadow-md mb-4 border-l-4 ${
+              r.status === 'completed'
+                ? 'border-green-500 bg-green-50'
+                : 'border-red-500 bg-red-50'
+            }`}
+          >
+            <div className="flex items-center gap-4">
+              {r.itemImage ? (
+                <img
+                  src={r.itemImage}
+                  alt={r.itemName}
+                  className="w-20 h-20 rounded-lg object-cover border"
+                />
+              ) : (
+                <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-sm">
+                  No Image
+                </div>
+              )}
 
-{r.status === 'returned' && (
-  <button
-    onClick={() => handleCompleteRent(r._id)}
-    className="bg-green-600 text-white px-4 py-1 rounded mt-2 hover:bg-green-700"
-  >
-    Complete Rent
-  </button>
-)}
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold">{r.itemName}</h3>
+                <p className="text-sm text-gray-700"><strong>From:</strong> {r.sellerName}</p>
+                <p className="text-sm text-gray-700"><strong>Dates:</strong> {r.startDate.slice(0,10)} to {r.endDate.slice(0,10)}</p>
+              </div>
 
-                    <p><strong>Item:</strong> {r.itemName}</p>
-                    <p><strong>From:</strong> {r.sellerName}</p>
-                    <p><strong>Dates:</strong> {r.startDate.slice(0,10)} to {r.endDate.slice(0,10)}</p>
-                    <p><strong>Status:</strong> <span className="text-blue-600 font-medium">{r.status}</span></p>
-                  </div>
-                ))
-            )}
+              <div className="text-right">
+                <p className={`text-sm font-semibold ${
+                  r.status === 'completed' ? 'text-green-700' : 'text-red-600'
+                }`}>
+                  {r.status === 'completed' ? 'Completed ✅' : 'Cancelled ❌'}
+                </p>
+              </div>
+            </div>
           </div>
-        )}
+        ))
+    )}
+  </div>
+)}
+
 {activeTab === 'status' && (
   <div>
     <div className="flex justify-between items-center mb-4">
       <h2 className="text-xl font-bold">Rent Request Status</h2>
 
       {/* Dropdown Filter */}
-      <select
-        value={statusFilter}
-        onChange={(e) => setStatusFilter(e.target.value)}
-        className="border border-gray-300 rounded px-3 py-1 text-sm"
-      >
-        <option value="all">All</option>
-        <option value="pending">Pending</option>
-        <option value="approved">Approved</option>
-        <option value="confirmed">Confirmed</option>
-        <option value="cancelled">Cancelled</option>
-      </select>
+      <div className="flex flex-wrap gap-2">
+  {['all', 'pending', 'approved', 'confirmed','in-use'].map((status) => (
+    <button
+      key={status}
+      onClick={() => setStatusFilter(status)}
+      className={`px-4 py-1 rounded-full text-sm font-medium transition ${
+        statusFilter === status
+          ? 'bg-[#D30C7B] text-white'
+          : 'bg-gray-100 text-gray-700 hover:bg-[#D30C7B]/10'
+      }`}
+    >
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </button>
+  ))}
+</div>
+
     </div>
 
     {/* Filtered Cards */}
@@ -342,8 +384,24 @@ useEffect(() => {
             'border-gray-300'
           }`}
         >
-          <p><strong>Item:</strong> {r.itemName}</p>
-          <p><strong>Requested:</strong> {r.startDate.slice(0, 10)} to {r.endDate.slice(0, 10)}</p>
+          
+          <div className="flex items-center gap-4">
+  {r.itemImage ? (
+    <img
+      src={r.itemImage}
+      alt={r.itemName}
+      className="w-20 h-20 rounded-lg object-cover border"
+    />
+  ) : (
+    <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-sm">
+      No Image
+    </div>
+  )}
+  <div>
+    <p><strong>Item:</strong> {r.itemName}</p>
+    <p><strong>Requested:</strong> {r.startDate.slice(0, 10)} to {r.endDate.slice(0, 10)}</p>
+  </div>
+</div>
 
           {/* Confirm Pickup (user side) */}
           {r.status === 'confirmed' && !r.confirmPickupByUser && (
@@ -354,7 +412,15 @@ useEffect(() => {
               Item Received
             </button>
           )}
-
+       
+       {r.status === 'in-use' && (
+  <button
+    onClick={() => handleMarkReturned(r._id)}
+    className="bg-yellow-500 text-white px-4 py-1 rounded mt-2 hover:bg-yellow-600"
+  >
+    Return Item
+  </button>
+)}
           <p>
             <strong>Request Status:</strong>{' '}
             <span className={`font-semibold ${

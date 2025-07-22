@@ -388,6 +388,7 @@ export const getMyRentedItems = async (req, res) => {
       .populate({
         path: 'item',
         select: 'name owner',
+        select: 'name images owner',
         populate: {
           path: 'owner',
           select: 'name'
@@ -397,10 +398,12 @@ export const getMyRentedItems = async (req, res) => {
     const formatted = rents.map(r => {
       const itemName = r.item ? r.item.name : 'Unknown';
       const sellerName = r.item?.owner ? r.item.owner.name : 'Unknown Seller';
+      const itemImage = r.item?.images?.[0] || null;
     
       return {
         _id: r._id,
         itemName,
+        itemImage,
         sellerName,
         startDate: r.startDate,
         endDate: r.endDate,
