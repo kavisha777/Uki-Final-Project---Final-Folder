@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 
 
+
 const SellerDashboard = () => {
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'profile';
@@ -23,6 +24,7 @@ const SellerDashboard = () => {
     { key: 'cancelled', label: 'Cancelled' },
   ];
   
+  const initialStatus = searchParams.get('filter');
 
   const [rentals, setRentals] = useState([]);
   const [profile, setProfile] = useState({});
@@ -47,8 +49,10 @@ const [rentHistory, setRentHistory] = useState([]);
 const [loadingRentStatus, setLoadingRentStatus] = useState(false);
 
 
-  const [statusFilter, setStatusFilter] = useState('approved');
+  
 const filteredRentals = rentals.filter(r => r.status === statusFilter);
+
+const [statusFilter, setStatusFilter] = useState(initialStatus || 'approved');
 
 
 const fetchRentals = async () => {

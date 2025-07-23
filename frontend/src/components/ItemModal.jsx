@@ -4,11 +4,15 @@ import 'react-datepicker/dist/react-datepicker.css';
 import axios from '../utils/axios';
 import { toast } from 'react-toastify';
 import '../assets/custom-datepicker.css'; 
+import { useNavigate } from 'react-router-dom';
 
 const ItemRentModal = ({ item, onClose }) => {
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [unavailableRanges, setUnavailableRanges] = useState([]);
+  const navigate = useNavigate();
+
+
 
   useEffect(() => {
     const fetchUnavailableDates = async () => {
@@ -42,6 +46,9 @@ const ItemRentModal = ({ item, onClose }) => {
 
       toast.success("Rent request submitted!");
       onClose();
+      setTimeout(() => {
+        navigate('/user-dashboard?tab=status'); // you could even add `&filter=pending`
+      }, 1000);
     } catch (err) {
       toast.error(err.response?.data?.message || "Rent request failed.");
     }

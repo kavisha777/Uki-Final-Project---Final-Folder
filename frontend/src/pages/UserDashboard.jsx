@@ -11,6 +11,7 @@ const UserDashboard = () => {
   const defaultTab = searchParams.get('tab') || 'profile';
   const [activeTab, setActiveTab] = useState(defaultTab);
   const [rentalViewFilter, setRentalViewFilter] = useState('all');
+  const initialStatus = searchParams.get('filter');
 
   const [rentals, setRentals] = useState([]);
   const [profile, setProfile] = useState({});
@@ -21,7 +22,7 @@ const UserDashboard = () => {
   const [editMode, setEditMode] = useState(false);
 
 
-  const [statusFilter, setStatusFilter] = useState('approved');
+  const [statusFilter, setStatusFilter] = useState('pending');
 const filteredRentals = rentals.filter(r => r.status === statusFilter);
 
 
