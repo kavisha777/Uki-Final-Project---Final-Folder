@@ -103,10 +103,10 @@ const fetchRentals = async () => {
   const handleMarkReturned = async (rentId) => {
     try {
       const res = await axios.patch(`/rent/${rentId}/return`);
-      alert(res.data.message);
+      toast.success(res.data.message);
       fetchRentals();
     } catch (err) {
-      alert("Return failed: " + err.response?.data?.message);
+      toast.error("Return failed: " + err.response?.data?.message);
     }
   };
   
@@ -180,7 +180,7 @@ useEffect(() => {
 
         {[
           { key: 'profile', label: 'My Profile', icon: <User size={18} /> },
-          { key: 'rentals', label: 'My Rentals', icon: <History size={18} /> },
+          { key: 'rentals', label: 'History', icon: <History size={18} /> },
           { key: 'status', label: 'Rent Status', icon: <Hourglass size={18} /> },
         ].map(({ key, label, icon }) => (
           <button
@@ -401,27 +401,12 @@ useEffect(() => {
   <div>
     <p><strong>Item:</strong> {r.itemName}</p>
     <p><strong>Requested:</strong> {r.startDate.slice(0, 10)} to {r.endDate.slice(0, 10)}</p>
+    <p><strong>Owner:</strong>{r.sellerName}</p>
+    {/* <p><strong>Owner Town:</strong>{profile.address}</p> */}
   </div>
 </div>
 
-          {/* Confirm Pickup (user side) */}
-          {r.status === 'confirmed' && !r.confirmPickupByUser && (
-            <button
-              onClick={() => handleConfirmPickup(r._id)}
-              className="bg-blue-600 text-white px-4 py-1 rounded mt-2 hover:bg-blue-700"
-            >
-              Item Received
-            </button>
-          )}
-       
-       {r.status === 'in-use' && (
-  <button
-    onClick={() => handleMarkReturned(r._id)}
-    className="bg-yellow-500 text-white px-4 py-1 rounded mt-2 hover:bg-yellow-600"
-  >
-    Return Item
-  </button>
-)}
+         
           <p>
             <strong>Request Status:</strong>{' '}
             <span className={`font-semibold ${
@@ -458,6 +443,24 @@ useEffect(() => {
               Pay Now
             </button>
           )}
+           {/* Confirm Pickup (user side) */}
+           {r.status === 'confirmed' && !r.confirmPickupByUser && (
+            <button
+              onClick={() => handleConfirmPickup(r._id)}
+              className="bg-blue-600 text-white px-4 py-1 rounded mt-2 hover:bg-blue-700"
+            >
+              Item Received
+            </button>
+          )}
+       
+       {r.status === 'in-use' && (
+  <button
+    onClick={() => handleMarkReturned(r._id)}
+    className="bg-yellow-500 text-white px-4 py-1 rounded mt-2 hover:bg-yellow-600"
+  >
+    Return Item
+  </button>
+)}
         </div>
       ))
     ) : (
