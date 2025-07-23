@@ -35,8 +35,9 @@ const SignupPopup = ({ onClose, onSwitchToLogin }) => {
  
   // Updated password validation: more than 8 chars, must include a letter and a number
   const validatePassword = (pwd) => {
-    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{9,}$/.test(pwd);
+    return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/.test(pwd);
   };
+  
   const [passwordError, setPasswordError] = useState('');
 
   const handlePasswordChange = (e) => {
