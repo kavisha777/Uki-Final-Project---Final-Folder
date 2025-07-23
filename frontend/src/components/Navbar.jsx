@@ -77,6 +77,12 @@ const Navbar = ({ onLogin, onSignup }) => {
 >
   About Us
 </button>
+<button
+  onClick={() => navigate('/contact')}
+  className="border-[#D30C7B] text-[#D30C7B] px-6 py-3 rounded-full hover:bg-[#D30C7B] hover:text-white transition"
+>
+  Contact
+</button>
 
           {!isLoggedIn ? (
             <>

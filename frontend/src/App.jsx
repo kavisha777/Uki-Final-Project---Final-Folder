@@ -8,6 +8,7 @@ import RentPaymentSuccess from './pages/RentPaymentSuccess.jsx';
 import SellerPaymentSuccess from './pages/SellerPaymentSuccess.jsx';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ContactPage from './pages/ContactPage.jsx';
 
 
 
@@ -37,7 +38,9 @@ function App() {
       <Route path="/items" element={<ItemsPage />} />
       <Route path="/rent-success" element={<RentPaymentSuccess />} />
       <Route path="/seller-success" element={<SellerPaymentSuccess />} />
-
+      <Route path="/contact" element={<ContactPage />} />
+      
+      
 
      
     </Routes>
