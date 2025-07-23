@@ -108,11 +108,11 @@ useEffect(() => {
     fetchRequests();
   }
 }, [activeTab]);
-useEffect(() => {
-  if (activeTab === 'requests') {
-    fetchRequests();
-  }
-}, [activeTab]);
+// useEffect(() => {
+//   if (activeTab === 'requests') {
+//     fetchRequests();
+//   }
+// }, [activeTab]);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();

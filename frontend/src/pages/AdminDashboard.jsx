@@ -16,6 +16,7 @@ const AdminDashboard = () => {
   const [editItem, setEditItem] = useState(null);
   const [newItem, setNewItem] = useState({ name: '', pricePerDay: '', available: true, owner: '', images: [] });
   const [imagePreview, setImagePreview] = useState('');
+  const [profile, setProfile] = useState({});
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -54,6 +55,13 @@ const AdminDashboard = () => {
     else if (activeTab === 'payments') fetchPayments();
   }, [activeTab]);
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const res = await axios.get('/user/profile');
+      setProfile(res.data);
+    };
+    fetchProfile();
+  }, []);
   const handleDeleteUser = async (id) => {
     if (confirm('Are you sure?')) {
       await axios.delete(`/admin/users/${id}`);
@@ -175,7 +183,7 @@ const AdminDashboard = () => {
 
   return (
     <>
-    <Navbar/>
+    <Navbar profile={profile}/>
     <div className="flex min-h-screen bg-[#FFF7FA] pt-20">
 
       <aside className="fixed top-20 h-screen w-64 bg-[#FDE7F0] p-6 text-[#2E2E2E">
@@ -194,38 +202,39 @@ const AdminDashboard = () => {
         {activeTab === 'users' && (
           <div className="overflow-x-auto bg-white shadow rounded">
             <table className="min-w-full divide-y divide-gray-200">
-            {renderTableHeader(['Name', 'Email', 'Role', 'Phone', 'Address', 'Town', 'Verified', 'Last Login', 'Actions', 'ID Proof', 'Profile Pic'])}
+            {renderTableHeader(['Profile Pic', 'Name', 'Email', 'Role', 'Phone', 'Address', 'Town', 'Verified', 'ID Proof', 'Actions'])}
+
 
               <tbody className="divide-y divide-gray-100">
                 {users.map((u) => (
                   <tr key={u._id} className="hover:bg-pink-50">
-                    {renderCell(u.name)}
-                    {renderCell(u.email)}
-                    {renderCell(u.role)}
-                    {renderCell(u.contactNumber)}
-                    {renderCell(u.address)}
-                    {renderCell(u.town)}
-                    {renderCell(u.isVerified ? 'Yes' : 'No')}
-                    {renderCell(u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : '-')}
-                    <td className="px-4 py-2 space-x-2">
-                      <button onClick={() => setEditUser({ ...u })} className="bg-blue-500 text-white px-3 py-1 rounded text-xs">Edit</button>
-                      {u.role === 'seller' && <button onClick={() => handleRevokeSeller(u._id)} className="bg-yellow-500 text-white px-3 py-1 rounded text-xs">Revoke</button>}
-                      <button onClick={() => handleDeleteUser(u._id)} className="bg-red-500 text-white px-3 py-1 rounded text-xs">Delete</button>
-                    </td>
-                    <td className="px-4 py-2">
-  {u.idProof ? (
-    <a href={u.idProof} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">
-      View ID
-    </a>
-  ) : '-'}
-</td>
-<td className="px-4 py-2">
-  {u.profilePic ? (
-    <img src={u.profilePic} alt="Profile" className="h-10 w-10 rounded-full object-cover" />
-  ) : '-'}
-</td>
-
-                  </tr>
+                  <td className="px-4 py-2">
+                    {u.profilePic ? (
+                      <img src={u.profilePic} alt="Profile" className="h-10 w-10 rounded-full object-cover" />
+                    ) : '-'}
+                  </td>
+                  {renderCell(u.name)}
+                  {renderCell(u.email)}
+                  {renderCell(u.role)}
+                  {renderCell(u.contactNumber)}
+                  {renderCell(u.address)}
+                  {renderCell(u.town)}
+                  {renderCell(u.isVerified ? 'Yes' : 'No')}
+                  {/* {renderCell(u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : '-')} */}
+                  <td className="px-4 py-2">
+                    {u.idProof ? (
+                      <a href={u.idProof} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline text-sm">
+                        View ID
+                      </a>
+                    ) : '-'}
+                  </td>
+                  <td className="px-4 py-2 space-x-2">
+                    <button onClick={() => setEditUser({ ...u })} className="bg-blue-500 text-white px-3 py-1 rounded text-xs">Edit</button>
+                    {u.role === 'seller' && <button onClick={() => handleRevokeSeller(u._id)} className="bg-yellow-500 text-white px-3 py-1 rounded text-xs">Revoke</button>}
+                    <button onClick={() => handleDeleteUser(u._id)} className="bg-red-500 text-white px-3 py-1 rounded text-xs">Delete</button>
+                  </td>
+                </tr>
+                
                 ))}
               </tbody>
             </table>
@@ -297,75 +306,6 @@ const AdminDashboard = () => {
   </div>
 )}
 
-{/* {activeTab === 'items' && (
-  <div>
-    <div className="flex justify-between items-center mb-4">
-      <h2 className="text-2xl font-bold">All Items</h2>
-      <button
-        onClick={() =>
-          setEditItem({
-            name: '',
-            description: '',
-            pricePerDay: '',
-            advanceAmount: '',
-            depositeAmount: '',
-            category: '',
-            available: true,
-            owner: '', 
-            images: [],
-          })
-        }
-        className="bg-green-500 text-white px-4 py-2 rounded"
-      >
-        + Add Item
-      </button>
-    </div>
-
-    <table className="w-full bg-white shadow rounded">
-      <thead>
-        <tr className="bg-[#FDE7F0] text-left">
-          <th>Name</th>
-          <th>Owner</th>
-          <th>Price/Day</th>
-          <th>Advance</th>
-          <th>Deposit</th>
-          <th>Category</th>
-          <th>Available</th>
-          <th>Created At</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {items.map((item) => (
-          <tr key={item._id} className="border-t">
-            <td>{item.name}</td>
-            <td>{item.owner?.name}</td>
-            <td>₹{item.pricePerDay}</td>
-            <td>₹{item.advanceAmount}</td>
-            <td>₹{item.depositeAmount}</td>
-            <td>{item.category}</td>
-            <td>{item.available ? 'Yes' : 'No'}</td>
-            <td>{new Date(item.createdAt).toLocaleDateString()}</td>
-            <td>
-              <button
-                onClick={() => setEditItem({ ...item })}
-                className="text-sm bg-blue-500 text-white px-2 py-1 rounded mr-2"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDeleteItem(item._id)}
-                className="text-sm bg-red-500 text-white px-2 py-1 rounded"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-)} */}
 
 {activeTab === 'items' && (
   <div className="overflow-x-auto bg-white shadow rounded">
@@ -526,42 +466,7 @@ const AdminDashboard = () => {
   </div>
 )}
 
-{/* 
-{activeTab === 'rents' && (
-  <div>
-    <h2 className="text-2xl font-bold mb-4">All Rent Records</h2>
-    <table className="w-full bg-white shadow rounded">
-    <thead>
-  <tr className="bg-[#FDE7F0] text-left">
-    <th>Item</th>
-    <th>Renter</th>
-    <th>Amount</th>
-    <th>Status</th>
-    <th>Start - End</th>
-  </tr>
-</thead>
-<tbody>
-  {rents.map((r) => (
-    <tr key={r._id} className="border-t">
-      <td>
-        <div className="font-semibold">{r.item?.name}</div>
-        <div className="text-xs text-gray-500">Owner: {r.item?.owner?.name || 'Unknown'}</div>
-      </td>
-      <td>
-        <div className="font-semibold">{r.renter?.name}</div>
-        <div className="text-xs text-gray-500">{r.renter?.email}</div>
-      </td>
-      <td>
-        {r.paymentDetails?.amount ? `₹${r.paymentDetails.amount}` : '-'}
-      </td>
-      <td>{renderStatusBadge(r.status)}</td>
-      <td>{new Date(r.startDate).toLocaleDateString()} - {new Date(r.endDate).toLocaleDateString()}</td>
-    </tr>
-  ))}
-</tbody>
-    </table>
-  </div>
-)} */}
+
 
 {activeTab === 'rents' && (
   <div className="overflow-x-auto bg-white shadow rounded">
@@ -590,25 +495,7 @@ const AdminDashboard = () => {
 )}
 
 
-{/* {activeTab === 'payments' && (
-  <div>
-    <h2 className="text-2xl font-bold mb-4">All Payments</h2>
-    <table className="w-full bg-white shadow rounded">
-      <thead><tr className="bg-[#FDE7F0] text-left"><th>User</th><th>Amount</th><th>Item</th><th>Status</th><th>Date</th></tr></thead>
-      <tbody>
-        {payments.map((p) => (
-          <tr key={p._id} className="border-t">
-            <td>{p.user?.name}</td>
-            <td>₹{p.amount}</td>
-            <td>{p.item?.name}</td>
-            <td>{p.status}</td>
-            <td>{new Date(p.createdAt).toLocaleString()}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-)} */}
+
 
 
 {activeTab === 'payments' && (
