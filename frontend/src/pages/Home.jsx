@@ -27,8 +27,16 @@ const Home = () => {
   const [packages, setPackages] = useState([]);
   const [showPackagesModal, setShowPackagesModal] = useState(false);
 
+  const [profile, setProfile] = useState({});
 
 
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const res = await axios.get('/user/profile');
+      setProfile(res.data);
+    };
+    fetchProfile();
+  }, []);
   // Check current role from localStorage
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -111,7 +119,7 @@ const Home = () => {
 
   return (
     <div className="bg-[#FDFDFD] text-[#2E2E2E] min-h-screen">
-      <Navbar onLogin={() => setShowLogin(true)} onSignup={() => setShowSignup(true)} />
+      <Navbar onLogin={() => setShowLogin(true)} onSignup={() => setShowSignup(true)} profile={profile} />
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-[#fde7f0] to-white text-[#2E2E2E]">

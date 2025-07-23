@@ -13,6 +13,8 @@ const UserDashboard = () => {
   const [rentalViewFilter, setRentalViewFilter] = useState('all');
   const initialStatus = searchParams.get('filter');
 
+
+  
   const [rentals, setRentals] = useState([]);
   const [profile, setProfile] = useState({});
   const [form, setForm] = useState({});
@@ -158,12 +160,18 @@ useEffect(() => {
 
   
   
-  
+useEffect(() => {
+  const fetchProfile = async () => {
+    const res = await axios.get('/user/profile');
+    setProfile(res.data);
+  };
+  fetchProfile();
+}, []);
 
   return (
     
    <>
-  <Navbar />
+  <Navbar profile={profile}/>
   <div className="flex pt-20 min-h-screen bg-[#FDFDFD] text-[#2E2E2E]">
       {/* Sidebar */}
       <aside className="w-64 bg-[#FDE7F0] p-6 space-y-6 shadow-md flex flex-col">

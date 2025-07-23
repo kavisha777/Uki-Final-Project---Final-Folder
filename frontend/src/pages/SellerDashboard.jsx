@@ -358,8 +358,8 @@ useEffect(() => {
   return (
     
    <>
-  <Navbar />
-  <div className="flex pt-20 min-h-screen bg-[#FDFDFD] text-[#2E2E2E]">
+<Navbar profile={profile} />
+<div className="flex pt-20 min-h-screen bg-[#FDFDFD] text-[#2E2E2E]">
       {/* Sidebar */}
       <aside className="w-64 bg-[#FDE7F0] p-6 space-y-6 shadow-md flex flex-col">
         <div className="text-center">
