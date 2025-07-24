@@ -834,8 +834,8 @@ useEffect(() => {
 
 
 
- {/* Rentals Tab */}
- {activeTab === 'rentals' && (
+   {/* Rentals Tab */}
+   {activeTab === 'rentals' && (
   <div>
     <div className="flex justify-between items-center mb-4">
       <h2 className="text-xl font-bold">My Rentals</h2>
@@ -862,49 +862,17 @@ useEffect(() => {
     ).length === 0 ? (
       <p className="text-gray-600">No rentals found.</p>
     ) : (
-      rentals
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {rentals
         .filter(r =>
-          rentalViewFilter === 'all' ? ['completed', 'cancelled'].includes(r.status)
+          rentalViewFilter === 'all'
+            ? ['completed', 'cancelled'].includes(r.status)
             : r.status === rentalViewFilter
         )
         .map(r => (
-          <div
-            key={r._id}
-            className={`p-4 rounded-lg shadow-md mb-4 border-l-4 ${
-              r.status === 'completed'
-                ? 'border-green-500 bg-green-50'
-                : 'border-red-500 bg-red-50'
-            }`}
-          >
-            <div className="flex items-center gap-4">
-              {r.itemImage ? (
-                <img
-                  src={r.itemImage}
-                  alt={r.itemName}
-                  className="w-20 h-20 rounded-lg object-cover border"
-                />
-              ) : (
-                <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-sm">
-                  No Image
-                </div>
-              )}
-
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold">{r.itemName}</h3>
-                <p className="text-sm text-gray-700"><strong>From:</strong> {r.sellerName}</p>
-                <p className="text-sm text-gray-700"><strong>Dates:</strong> {r.startDate.slice(0,10)} to {r.endDate.slice(0,10)}</p>
-              </div>
-
-              <div className="text-right">
-                <p className={`text-sm font-semibold ${
-                  r.status === 'completed' ? 'text-green-700' : 'text-red-600'
-                }`}>
-                  {r.status === 'completed' ? 'Completed ✅' : 'Cancelled ❌'}
-                </p>
-              </div>
-            </div>
-          </div>
-        ))
+          <RentalCard key={r._id} item={r} isRentalView />
+        ))}
+    </div>
     )}
   </div>
 )}
@@ -934,98 +902,54 @@ useEffect(() => {
     </div>
 
     {/* Filtered Cards */}
-    {(statusFilter === 'all' ? rentals : rentals.filter(r => r.status === statusFilter)).length > 0 ? (
-      (statusFilter === 'all' ? rentals : rentals.filter(r => r.status === statusFilter)).map((r) => (
-        <div
-          key={r._id}
-          className={`bg-white p-4 rounded-lg shadow mb-4 space-y-1 border-l-4 ${
-            r.status === 'approved' ? 'border-green-500' :
-            r.status === 'cancelled' ? 'border-red-500' :
-            r.status === 'pending' ? 'border-yellow-500' :
-            r.status === 'confirmed' ? 'border-blue-500' :
-            'border-gray-300'
-          }`}
-        >
-          
-          <div className="flex items-center gap-4">
-  {r.itemImage ? (
-    <img
-      src={r.itemImage}
-      alt={r.itemName}
-      className="w-20 h-20 rounded-lg object-cover border"
-    />
-  ) : (
-    <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center text-gray-500 text-sm">
-      No Image
-    </div>
-  )}
-  <div>
-    <p><strong>Item:</strong> {r.itemName}</p>
-    <p><strong>Requested:</strong> {r.startDate.slice(0, 10)} to {r.endDate.slice(0, 10)}</p>
+   {/* Filtered Cards */}
+{(statusFilter === 'all' ? rentals : rentals.filter(r => r.status === statusFilter)).length > 0 ? (
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    {(statusFilter === 'all' ? rentals : rentals.filter(r => r.status === statusFilter)).map((r) => (
+      <RentalCard
+        key={r._id}
+        item={r}
+        showStatus
+        isRentalView
+        actions={
+          <>
+            {r.status === 'approved' && !r.paid && (
+              <button
+                onClick={() => handleStripePayment(r._id)}
+                className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 text-sm"
+              >
+                Pay Now
+              </button>
+            )}
+            {r.status === 'confirmed' && !r.confirmPickupByUser && (
+              <button
+                onClick={() => handleConfirmPickup(r._id)}
+                className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700 text-sm"
+              >
+                Item Received
+              </button>
+            )}
+            {r.status === 'in-use' && (
+              <button
+                onClick={() => handleMarkReturned(r._id)}
+                className="bg-yellow-500 text-white px-4 py-1 rounded hover:bg-yellow-600 text-sm"
+              >
+                Return Item
+              </button>
+            )}
+          </>
+        }
+      />
+    ))}
   </div>
-</div>
-
-          {/* Confirm Pickup (user side) */}
-          {r.status === 'confirmed' && !r.confirmPickupByUser && (
-            <button
-              onClick={() => handleConfirmPickup(r._id)}
-              className="bg-blue-600 text-white px-4 py-1 rounded mt-2 hover:bg-blue-700"
-            >
-              Item Received
-            </button>
-          )}
-       
-       {r.status === 'in-use' && (
-  <button
-    onClick={() => handleMarkReturned(r._id)}
-    className="bg-yellow-500 text-white px-4 py-1 rounded mt-2 hover:bg-yellow-600"
-  >
-    Return Item
-  </button>
+) : (
+  <p className="text-gray-600">No {statusFilter} requests found.</p>
 )}
-          <p>
-            <strong>Request Status:</strong>{' '}
-            <span className={`font-semibold ${
-              r.status === 'approved'
-                ? 'text-green-600'
-                : r.status === 'cancelled'
-                ? 'text-red-600'
-                : r.status === 'pending'
-                ? 'text-yellow-600'
-                : r.status === 'confirmed'
-                ? 'text-blue-600'
-                : 'text-gray-600'
-            }`}>
-              {r.status}
-            </span>
-          </p>
 
-          <p>
-  <strong>Payment Status:</strong>{' '}
-  <span className={`font-semibold ${
-    r.paymentStatus === 'completed' ? 'text-green-700' : 'text-red-500'
-  }`}>
-    {r.paymentStatus === 'completed' ? 'Paid ✅' : 'Not Paid ❌'}
-  </span>
-</p>
-
-
-          {/* Pay Now Button */}
-          {r.status === 'approved' && !r.paid && (
-            <button
-              onClick={() => handleStripePayment(r._id)}
-              className="bg-green-600 text-white px-4 py-1 rounded mt-2 hover:bg-green-700"
-            >
-              Pay Now
-            </button>
-          )}
-        </div>
-      ))
-    ) : (
-      <p className="text-gray-600">No {statusFilter} requests found.</p>
-    )}
   </div>
 )}
+
+
 
 
 
