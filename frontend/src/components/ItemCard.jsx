@@ -29,7 +29,7 @@ const ItemCard = ({ item, onRentClick, openLoginPopup }) => {
       <img
         src={item.images && item.images.length > 0 ? item.images[0] : null}
         alt={item.name}
-        className="h-48 w-full object-cover rounded mb-2 flex-shrink-0"
+        className="h-48 w-full object-contain bg-white rounded mb-2 flex-shrink-0"
       />
       <h3 className="text-lg font-semibold truncate">{item.name}</h3>
       <p className="text-gray-600 truncate">{item.category}</p>

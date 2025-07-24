@@ -16,6 +16,14 @@ const ItemsPage = () => {
   const [townList, setTownList] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
+  const [profile, setProfile] = useState({});
+
+useEffect(() => {
+  axios.get('/user/profile')
+    .then(res => setProfile(res.data))
+    .catch(err => console.error("Error loading profile:", err));
+}, []);
+
 
   useEffect(() => {
     axios.get('/items')
@@ -45,7 +53,7 @@ const ItemsPage = () => {
 
   return (
     <>
-    <Navbar />
+    <Navbar profile={profile} />
     <div className="bg-[#FDFDFD] min-h-screen px-6 py-8 mt-20">
       <h1 className="text-3xl font-bold text-center mb-6">Explore Items</h1>
 

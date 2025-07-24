@@ -34,6 +34,11 @@ const SellerDashboard = () => {
   const [message, setMessage] = useState('');
   const [editMode, setEditMode] = useState(false);
 
+  const [imagePreviews, setImagePreviews] = useState([]);
+
+  const [showItemFormModal, setShowItemFormModal] = useState(false);
+const [searchTerm, setSearchTerm] = useState('');
+
 
   const [myItems, setMyItems] = useState([]);
 const [itemForm, setItemForm] = useState({});
@@ -203,6 +208,9 @@ useEffect(() => {
       available: item.available
     });
     setEditingItemId(item._id);
+    setShowItemFormModal(true);
+    const previews = item.images.map(url => ({ file: url, preview: url }));
+  setImagePreviews(previews);
   };
   
   const handleDeleteItem = async (id) => {
@@ -517,44 +525,136 @@ useEffect(() => {
 
 {activeTab === 'items' && (
   <div>
-    <h2 className="text-xl font-bold mb-4">{editingItemId ? 'Edit Item' : 'Add New Item'}</h2>
-    <form onSubmit={handleItemSubmit} className="space-y-3 bg-white p-6 rounded shadow mb-6">
-      <input type="text" placeholder="Name" value={itemForm.name || ''} onChange={e => setItemForm({ ...itemForm, name: e.target.value })} className="w-full p-2 border rounded" />
-      <textarea placeholder="Description" value={itemForm.description || ''} onChange={e => setItemForm({ ...itemForm, description: e.target.value })} className="w-full p-2 border rounded" />
-      <input type="number" placeholder="Price/Day" value={itemForm.pricePerDay || ''} onChange={e => setItemForm({ ...itemForm, pricePerDay: e.target.value })} className="w-full p-2 border rounded" />
-    
-      <input type="number" placeholder="Deposit Amount" value={itemForm.depositeAmount || ''} onChange={e => setItemForm({ ...itemForm, depositeAmount: e.target.value })} className="w-full p-2 border rounded" />
-      <select value={itemForm.category || ''} onChange={e => setItemForm({ ...itemForm, category: e.target.value })} className="w-full p-2 border rounded">
-        <option value="">Select Category</option>
-        {['shoes', 'furniture', 'jewels', 'clothing', 'cameras', 'audio', 'filming', 'photography', 'lighting', 'other'].map(cat => (
-          <option key={cat} value={cat}>{cat}</option>
-        ))}
-      </select>
-      <input type="file" multiple onChange={e => setItemImages([...e.target.files])} />
-      <button type="submit" className="bg-[#D30C7B] text-white px-4 py-2 rounded">
-        {editingItemId ? 'Update Item' : 'Create Item'}
+    <div className="flex items-center justify-between mb-4">
+  <h2 className="text-2xl font-bold">My Items ({myItems.length})</h2>
+  <button
+    onClick={() => {
+      setShowItemFormModal(true);
+      setEditingItemId(null);
+      setItemForm({});
+      setItemImages([]);
+    }}
+    className="bg-[#D30C7B] text-white px-4 py-2 rounded shadow hover:bg-pink-700"
+  >
+    ➕ Add Item
+  </button>
+</div>
+
+<input
+  type="text"
+  placeholder="Search items..."
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  className="w-full p-2 mb-4 border rounded"
+/>
+
+{showItemFormModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+    <div className="bg-white p-6 rounded-lg w-full max-w-lg shadow-lg relative">
+      <button
+        onClick={() => setShowItemFormModal(false)}
+        className="absolute top-2 right-3 text-gray-500 hover:text-red-600"
+      >
+        ✖
       </button>
-    </form>
+
+      <h2 className="text-xl font-semibold mb-4">{editingItemId ? 'Edit Item' : 'Add New Item'}</h2>
+      <form onSubmit={handleItemSubmit} className="space-y-3">
+        <input type="text" placeholder="Name" value={itemForm.name || ''} onChange={e => setItemForm({ ...itemForm, name: e.target.value })} className="w-full p-2 border rounded" />
+        <textarea placeholder="Description" value={itemForm.description || ''} onChange={e => setItemForm({ ...itemForm, description: e.target.value })} className="w-full p-2 border rounded" />
+        <input type="number" placeholder="Price/Day" value={itemForm.pricePerDay || ''} onChange={e => setItemForm({ ...itemForm, pricePerDay: e.target.value })} className="w-full p-2 border rounded" />
+        <input type="number" placeholder="Deposit Amount" value={itemForm.depositeAmount || ''} onChange={e => setItemForm({ ...itemForm, depositeAmount: e.target.value })} className="w-full p-2 border rounded" />
+        <select value={itemForm.category || ''} onChange={e => setItemForm({ ...itemForm, category: e.target.value })} className="w-full p-2 border rounded">
+          <option value="">Select Category</option>
+          {['shoes', 'furniture', 'jewels', 'clothing', 'cameras', 'audio', 'filming', 'photography', 'lighting', 'other'].map(cat => (
+            <option key={cat} value={cat}>{cat}</option>
+          ))}
+        </select>
+        <input
+  type="file"
+  multiple
+  accept="image/*"
+  onChange={(e) => {
+    const files = Array.from(e.target.files);
+    setItemImages(files); // store the files for upload
+
+    // For preview: generate object URLs
+    const previews = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file),
+    }));
+    setImagePreviews(previews);
+  }}
+  className="w-full"
+/>
+{imagePreviews.length > 0 && (
+  <div className="flex flex-wrap gap-2 mt-2">
+    {imagePreviews.map((img, index) => (
+      <div key={index} className="w-20 h-20 overflow-hidden border rounded">
+        <img
+          src={img.preview}
+          alt={`preview-${index}`}
+          className="w-full h-full object-cover"
+        />
+      </div>
+    ))}
+  </div>
+)}
+
+
+        <button type="submit" className="bg-[#D30C7B] text-white px-4 py-2 rounded">
+          {editingItemId ? 'Update Item' : 'Create Item'}
+        </button>
+      </form>
+    </div>
+  </div>
+)}
 
     <h2 className="text-xl font-bold mb-4">My Items</h2>
     {myItems.length === 0 ? (
-      <p className="text-gray-500">No items found.</p>
-    ) : (
-      myItems.map(item => (
-        <div key={item._id} className="bg-white p-4 rounded shadow mb-4">
-          <div className="flex justify-between items-center">
-            <h3 className="font-semibold text-lg">{item.name}</h3>
-            <div className="space-x-2">
-              <button onClick={() => handleEditItem(item)} className="text-blue-600 hover:underline">Edit</button>
-              <button onClick={() => handleDeleteItem(item._id)} className="text-red-600 hover:underline">Delete</button>
-            </div>
+  <p className="text-gray-500">No items found.</p>
+) : (
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {myItems
+      .filter(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.category.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .map(item => (
+        <div key={item._id} className="bg-white rounded-xl shadow p-4 ">
+          {item.images?.[0] && (
+            <img
+              src={item.images[0]}
+              alt={item.name}
+              className="w-full h-40 object-contain rounded-lg mb-2"
+            />
+          )}
+
+          <h3 className="text-lg font-semibold truncate">{item.name}</h3>
+          <p className="text-sm text-gray-600 line-clamp-2">{item.description}</p>
+          <p className="text-sm mt-1"><strong>Category:</strong> {item.category}</p>
+          <p className="text-sm"><strong>Available:</strong> {item.available ? 'Yes' : 'No'}</p>
+
+          <div className="flex justify-between mt-2">
+            <button
+              onClick={() => handleEditItem(item)}
+              className="text-blue-600 hover:underline text-sm"
+            >
+              Edit
+            </button>
+            <button
+              onClick={() => handleDeleteItem(item._id)}
+              className="text-red-600 hover:underline text-sm"
+            >
+              Delete
+            </button>
           </div>
-          <p>{item.description}</p>
-          <p><strong>Category:</strong> {item.category}</p>
-          <p><strong>Available:</strong> {item.available ? 'Yes' : 'No'}</p>
         </div>
-      ))
-    )}
+      ))}
+  </div>
+)}
+
   </div>
 )}
 
