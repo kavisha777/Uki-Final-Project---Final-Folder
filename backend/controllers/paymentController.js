@@ -19,7 +19,7 @@ export const createCheckoutSession = async (req, res) => {
       payment_method_types: ['card'],
       line_items: [{
         price_data: {
-          currency: 'usd',
+          currency: 'lkr',
           product_data: {
             name: packageData.name,
             description: `Duration: ${packageData.duration} days, Limit: ${packageData.itemLimit} items`,
@@ -72,7 +72,7 @@ export const createRentCheckoutSession = async (req, res) => {
       payment_method_types: ['card'],
       line_items: [{
         price_data: {
-          currency: 'usd',
+          currency: 'lkr',
           product_data: {
             name: item.name,
             description: `Rental for ${numDays} days`

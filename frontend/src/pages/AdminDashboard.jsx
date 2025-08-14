@@ -17,6 +17,7 @@ const AdminDashboard = () => {
   const [newItem, setNewItem] = useState({ name: '', pricePerDay: '', available: true, owner: '', images: [] });
   const [imagePreview, setImagePreview] = useState('');
   const [profile, setProfile] = useState({});
+  const [feedbacks, setFeedbacks] = useState([]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -35,8 +36,18 @@ const AdminDashboard = () => {
 
   const fetchRents = async () => {
     setLoading(true);
-    const res = await axios.get('/rent/all'); // or '/api/rent/all'
+    const res = await axios.get('/rent/all'); 
     setRents(res.data);
+    setLoading(false);
+  };
+  const fetchFeedbacks = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get('/admin/feedback');
+      setFeedbacks(res.data);
+    } catch (err) {
+      toast.error('Failed to load feedbacks');
+    }
     setLoading(false);
   };
   
@@ -54,7 +65,14 @@ const AdminDashboard = () => {
     else if (activeTab === 'rents') fetchRents();
     else if (activeTab === 'payments') fetchPayments();
   }, [activeTab]);
-
+  useEffect(() => {
+    if (activeTab === 'users') fetchUsers();
+    else if (activeTab === 'items') fetchItems();
+    else if (activeTab === 'rents') fetchRents();
+    else if (activeTab === 'payments') fetchPayments();
+    else if (activeTab === 'feedback') fetchFeedbacks();
+  }, [activeTab]);
+  
   useEffect(() => {
     const fetchProfile = async () => {
       const res = await axios.get('/user/profile');
@@ -193,6 +211,8 @@ const AdminDashboard = () => {
           <li><button onClick={() => setActiveTab('items')} className={`block w-full text-left ${activeTab === 'items' ? 'font-bold' : ''}`}>Item Management</button></li>
           <li><button onClick={() => setActiveTab('rents')} className={`block w-full text-left ${activeTab === 'rents' ? 'font-bold' : ''}`}>Rent Management</button></li>
           <li><button onClick={() => setActiveTab('payments')} className={`block w-full text-left ${activeTab === 'payments' ? 'font-bold' : ''}`}>Payment Management</button></li>
+          <li><button onClick={() => setActiveTab('feedback')} className={`block w-full text-left ${activeTab === 'feedback' ? 'font-bold' : ''}`}>Feedback</button></li>
+
         </ul>
       </aside>
 
@@ -517,6 +537,26 @@ const AdminDashboard = () => {
     </table>
   </div>
 )}
+
+{activeTab === 'feedback' && (
+  <div className="overflow-x-auto bg-white shadow rounded">
+    <h2 className="text-xl font-bold p-4">User Feedback</h2>
+    <table className="min-w-full divide-y divide-gray-200">
+      {renderTableHeader(['User', 'Email', 'Message', 'Date'])}
+      <tbody className="divide-y divide-gray-100">
+        {feedbacks.map((f) => (
+          <tr key={f._id} className="hover:bg-pink-50">
+            {renderCell(f.userId?.name || 'Anonymous')}
+            {renderCell(f.userId?.email || '-')}
+            {renderCell(f.message)}
+            {renderCell(new Date(f.createdAt).toLocaleString())}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
+
 
  </main>
     </div>

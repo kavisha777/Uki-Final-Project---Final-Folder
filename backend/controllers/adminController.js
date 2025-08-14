@@ -1,6 +1,7 @@
 // controllers/adminController.js
 import User from '../models/User.js';
 import Rent from '../models/Rent.js';
+import Feedback from '../models/Feedback.js';
 
 import Payment from '../models/Payment.js';
 
@@ -117,5 +118,18 @@ export const getAllRentsForAdmin = async (req, res) => {
   } catch (err) {
     console.error('Error fetching all rents for admin:', err);
     res.status(500).json({ error: 'Failed to retrieve rent records' });
+  }
+};
+
+export const getAllFeedbacks = async (req, res) => {
+  try {
+    const feedbacks = await Feedback.find()
+      .populate('userId', 'name email') // populate user name and email
+      .sort({ createdAt: -1 });
+
+    res.status(200).json(feedbacks);
+  } catch (err) {
+    console.error('Error fetching feedbacks:', err.message);
+    res.status(500).json({ message: 'Failed to fetch feedbacks' });
   }
 };

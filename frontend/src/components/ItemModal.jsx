@@ -12,6 +12,7 @@ const ItemRentModal = ({ item, onClose }) => {
   const [unavailableRanges, setUnavailableRanges] = useState([]);
   const navigate = useNavigate();
 
+  
 
 
   useEffect(() => {
@@ -36,23 +37,31 @@ const ItemRentModal = ({ item, onClose }) => {
       toast.error("Please select a valid date range.");
       return;
     }
-
+  
     try {
       const res = await axios.post('/rent/', {
         itemId: item._id,
         startDate,
         endDate,
       });
-
+  
       toast.success("Rent request submitted!");
       onClose();
+  
+      const role = localStorage.getItem('role'); // 👈 Get user role
+  
       setTimeout(() => {
-        navigate('/user-dashboard?tab=status'); // you could even add `&filter=pending`
+        if (role === 'seller') {
+          navigate('/seller-dashboard?tab=status&filter=pending'); // 👈 Seller goes here
+        } else {
+          navigate('/user-dashboard?tab=status&filter=pending');   // 👈 Normal user goes here
+        }
       }, 1000);
     } catch (err) {
       toast.error(err.response?.data?.message || "Rent request failed.");
     }
   };
+  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

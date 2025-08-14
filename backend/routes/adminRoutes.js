@@ -1,6 +1,6 @@
 import { revokeSeller } from '../controllers/adminController.js';
 import express from 'express';
-import { getAllUsers,updateUser,deleteUser,getAllRentsForAdmin,getAllPayments} from '../controllers/adminController.js';
+import { getAllUsers,updateUser,deleteUser,getAllRentsForAdmin,getAllPayments,getAllFeedbacks} from '../controllers/adminController.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
 
@@ -14,6 +14,7 @@ router.put('/users/:id', authMiddleware([ 'admin']), updateUser);
 router.delete('/users/:id', authMiddleware(['admin']), deleteUser);
 router.put('/revoke-seller/:id', authMiddleware(['admin']), revokeSeller);
 router.get('/payments', authMiddleware(['admin']), getAllPayments);
+router.get('/feedback', getAllFeedbacks); 
 
 
 export default router;

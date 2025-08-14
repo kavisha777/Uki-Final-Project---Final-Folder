@@ -7,11 +7,19 @@ const SignupPopup = ({ onClose, onSwitchToLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+  const [contact, setContact] = useState('');
+  const [address, setAddress] = useState('');
+  const [idProof, setIdProof] = useState('');
 
+  const [idProofFile, setIdProofFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  
   const handleSignup = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/auth/signup', { name, email, password });
+      const res = await axios.post('/auth/signup', { name, email, password ,contact,
+        address,
+        idProof, });
       setToast({ show: true, message: res.data.message || 'Registered!', type: 'success' });
       setTimeout(() => {
         setToast({ show: false, message: '', type: 'success' });
@@ -114,6 +122,40 @@ const SignupPopup = ({ onClose, onSwitchToLogin }) => {
                   <p className="text-red-500 text-xs mt-1">{passwordError}</p>
                 )}
               </div>
+              <div className="mt-3">
+  <label className="block font-semibold text-[#2E2E2E]">Contact Number</label>
+  <input
+    type="tel"
+    className="w-full p-3 rounded-lg border border-[#CBA3D8] focus:outline-none focus:border-[#D30C7B]"
+    value={contact}
+    onChange={(e) => setContact(e.target.value)}
+    required
+  />
+</div>
+
+<div className="mt-3">
+  <label className="block font-semibold text-[#2E2E2E]">Address</label>
+  <input
+    type="text"
+    className="w-full p-3 rounded-lg border border-[#CBA3D8] focus:outline-none focus:border-[#D30C7B]"
+    value={address}
+    onChange={(e) => setAddress(e.target.value)}
+    required
+  />
+</div>
+
+<div className="mt-3">
+  <label className="block font-semibold text-[#2E2E2E]">Upload ID Proof</label>
+  <input
+    type="file"
+    accept="image/*"
+    className="w-full p-2 border rounded-lg border-[#CBA3D8]"
+    onChange={(e) => uploadToCloudinary(e.target.files[0])}
+    required
+  />
+  {uploading && <p className="text-sm text-gray-600 mt-1">Uploading...</p>}
+  {idProof && <p className="text-green-600 text-xs mt-1">Uploaded ✔️</p>}
+</div>
 
               <button
                 type="submit"

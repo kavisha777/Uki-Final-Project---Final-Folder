@@ -5,24 +5,14 @@ import { useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Navbar from '../components/Navbar'; 
 import 'react-toastify/dist/ReactToastify.css';
-
-
-
+import RentalCard from '../components/RentalCard';
 
 const SellerDashboard = () => {
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'profile';
   const [activeTab, setActiveTab] = useState(defaultTab);
-  const rentalViewFilter = [
-    { key: 'all', label: 'All' },
-    { key: 'pending', label: 'Pending' },
-    { key: 'approved', label: 'Approved' },
-    { key: 'confirmed', label: 'Confirmed' },
-    { key: 'in-use', label: 'In Use' },
-    { key: 'returned', label: 'Returned' },
-    { key: 'completed', label: 'Completed' },
-    { key: 'cancelled', label: 'Cancelled' },
-  ];
+  const [rentalViewFilter, setRentalViewFilter] = useState('all');
+
   
   const initialStatus = searchParams.get('filter');
 
@@ -38,8 +28,6 @@ const SellerDashboard = () => {
 
   const [showItemFormModal, setShowItemFormModal] = useState(false);
 const [searchTerm, setSearchTerm] = useState('');
-
-
   const [myItems, setMyItems] = useState([]);
 const [itemForm, setItemForm] = useState({});
 const [itemImages, setItemImages] = useState([]);
@@ -53,11 +41,11 @@ const [totalEarnings, setTotalEarnings] = useState(0);
 const [rentHistory, setRentHistory] = useState([]);
 const [loadingRentStatus, setLoadingRentStatus] = useState(false);
 
-
   
+const [statusFilter, setStatusFilter] = useState(initialStatus || 'approved');
 const filteredRentals = rentals.filter(r => r.status === statusFilter);
 
-const [statusFilter, setStatusFilter] = useState(initialStatus || 'approved');
+
 
 
 const fetchRentals = async () => {
@@ -91,7 +79,6 @@ const fetchRentals = async () => {
     }
   };
 
-
   const [requests, setRequests] = useState([]);
 const [loadingRequests, setLoadingRequests] = useState(false);
 
@@ -113,11 +100,6 @@ useEffect(() => {
     fetchRequests();
   }
 }, [activeTab]);
-// useEffect(() => {
-//   if (activeTab === 'requests') {
-//     fetchRequests();
-//   }
-// }, [activeTab]);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -139,8 +121,6 @@ useEffect(() => {
       setMessage('Failed to update profile.');
     }
   };
-
-
 
   useEffect(() => {
     const fetchSellerPayments = async () => {
@@ -357,10 +337,6 @@ useEffect(() => {
     window.history.replaceState({}, '', '/dashboard'); // ✅ Clean URL
   }
 }, []);
-
-
-
-  
   
 
   return (
@@ -418,7 +394,7 @@ useEffect(() => {
   <hr className="border-t border-gray-300 my-2" />
   <p className="text-xs font-semibold text-gray-500 px-4">USER</p>
   {[
-    { key: 'rentals', label: 'My Rentals', icon: <History size={18} /> },
+    { key: 'rentals', label: 'History', icon: <History size={18} /> },
     { key: 'status', label: 'My Borrowed Rent Status', icon: <Hourglass size={18} /> },
   ].map(({ key, label, icon }) => (
     <button
@@ -514,15 +490,6 @@ useEffect(() => {
         )}
 
 
-
-
-
-
-
-
-
-
-
 {activeTab === 'items' && (
   <div>
     <div className="flex items-center justify-between mb-4">
@@ -576,9 +543,7 @@ useEffect(() => {
   accept="image/*"
   onChange={(e) => {
     const files = Array.from(e.target.files);
-    setItemImages(files); // store the files for upload
-
-    // For preview: generate object URLs
+    setItemImages(files); 
     const previews = files.map(file => ({
       file,
       preview: URL.createObjectURL(file),
@@ -834,8 +799,8 @@ useEffect(() => {
 
 
 
-   {/* Rentals Tab */}
-   {activeTab === 'rentals' && (
+        {/* Rentals Tab */}
+        {activeTab === 'rentals' && (
   <div>
     <div className="flex justify-between items-center mb-4">
       <h2 className="text-xl font-bold">My Rentals</h2>
@@ -948,17 +913,7 @@ useEffect(() => {
 
   </div>
 )}
-
-
-
-
-
-
-
-
-
-        
-      </main>
+ </main>
     </div>
     </>
   );

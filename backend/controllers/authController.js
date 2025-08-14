@@ -15,7 +15,7 @@ export const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      contact,
+      contactNumber: contact,
       address,
       idProof
     });
