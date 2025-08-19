@@ -22,7 +22,16 @@ const app = express();
 app.post('/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 
 // 🔐 General middleware
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+const allowedOrigins = [
+  "http://localhost:5173",            // local dev
+  "https://kavisha777.github.io"      // GitHub Pages
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true
+}));
+
 app.use(express.json());
 
 // 🧪 Health check endpoint
